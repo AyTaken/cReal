@@ -1,0 +1,22 @@
+{
+  "name": "creal",
+  "version": "1.0.0",
+  "description": "A continuous real book",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AyTaken/cReal.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AyTaken/cReal/issues"
+  },
+  "homepage": "https://github.com/AyTaken/cReal#readme",
+  "dependencies": {
+    "tone": "^14.7.77"
+  }
+}
