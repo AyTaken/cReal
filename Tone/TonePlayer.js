@@ -1,4 +1,4 @@
-const chord = require('./chords.js');
+const chord = require('../chords.js');
 console.log(chord.getNotesChord('G7'));
 console.log('Dio Cane');
 import * as Tone from 'tone';
