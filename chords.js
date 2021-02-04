@@ -181,6 +181,11 @@ function getMask(quality) {
             //Major 13th
             ris = [0,4,7,11,14,17,21]
             break;
+        default:
+            //Dominant 7th
+            ris = [0,4,7,10]
+            break;
+
         
             
 
