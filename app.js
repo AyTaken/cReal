@@ -1,15 +1,36 @@
-const TonePlayer = require('./TonePlayer');
+//const TonePlayer = require('./TonePlayer');
+const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
+const View = require('./view.js')
+
+//Cannot use in browser
 //const fs = require('fs')
 //var contents = fs.readFileSync("./test.json", "utf8")
-let songs = require('./test.json');
 //var songs = JSON.parse(json);
-let allBlues = songs[0].music.measures
-allBlues[0][1] = 'C7'
-TonePlayer.setCurrentSong(allBlues)
+
+
+
 let measureNumber
+
+
+
 
 exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
     this.measureNumber = measureNumber;
     //Change nella view la misura illuminata
+}
+
+//Initialization
+let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
+//TonePlayer.setCurrentSong(initialSong)
+updateView(initialSong)
+
+
+function updateView(song) {
+    View.changeState(song)
+
+}
+
+function nextSong(){
+
 }
