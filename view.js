@@ -6,6 +6,7 @@ let key
 let bpm
 let timeSignature
 let chords = []
+let currentMeasure
 let connectChords
 
 //Dom elements
@@ -13,17 +14,27 @@ const chordPanel = document.getElementById("chords")
 const titleDiv = document.getElementById("songTitle")
 const composerDiv = document.getElementById("composer")
 const styleAndKeyDiv = document.getElementById("styleAndKey")
+//Grid generation
+for (let i = 0; i < 24; i++) {
+    let div = document.createElement("div");
+    div.id = "cell" + i
+    div.classList.add("cell")
+    chordPanel.appendChild(div)
+}
 
-exports.changeState = function (song) {
+exports.changeState = function (song, subMeasure, currentMeas) {
     title = song.title
     composer = song.composer
     style = song.style
     key = song.key
     bpm = song.bpm
     timeSignature = song.music.timeSignature
+    currentMeasure = currentMeas
     //Copy all measures
-    for (let i = 0; i < song.music.measures.length; i++) {
-        let temp = song.music.measures[i]
+    for (let i = 0; i < 24; i++)
+        chords.pop()
+    for (let i = 0; i < 24; i++) {
+        let temp = subMeasure[i]
         chords.push(temp)
     }
     render()
@@ -33,18 +44,17 @@ exports.changeState = function (song) {
 
 function render() {
     //Render chords
-    for (let i = 0; i < chords.length; i++) {
-        let div = document.createElement("div");
-        div.id = "cell" + i
-        div.classList.add("cell")
-        div.textContent = chords[i]
-        chordPanel.appendChild(div)
+    for (let i = 0; i < chordPanel.children.length; i++) {
+        chordPanel.children[i].textContent = chords[i]
+        if (i == currentMeasure)
+            chordPanel.children[i].classList.add("selectedCell")
+        else 
+            chordPanel.children[i].classList.remove("selectedCell")
     }
 
     //Render sidebar panel
     titleDiv.textContent = title
     composerDiv.textContent = composer
     styleAndKeyDiv.textContent = style + " in " + key
-    console.log(title)
 
 }

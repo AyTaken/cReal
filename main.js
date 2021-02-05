@@ -9,30 +9,99 @@ const View = require('./view.js')
 //var songs = JSON.parse(json);
 
 
-
-let measureNumber
-
+let currentSong
+let measuresLen
+let nextSong 
+let currentMeasure = 0
+const chunkSize = 24
 
 
 
 exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
-    this.measureNumber = measureNumber;
+    currentMeasure = measureNum;
     //Change nella view la misura illuminata
 }
 
 //Initialization
 let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
 //TonePlayer.setCurrentSong(initialSong)
-updateView(initialSong)
+currentSong = initialSong
 
 
-function updateView(song) {
-    View.changeState(song)
+
+//TEST
+function setCurrentMeasure(measureNum) {
+    //Refers to the current played measure by TonePlayer
+    currentMeasure = measureNum;
+    currentBlockCursor = currentMeasure % chunkSize
+    if (blockMeasures.length > 1)
+        scrollSubView();
+    //Change nella view la misura illuminata
+}
+measuresLen = currentSong.music.measures.length
+
+
+let blockMeasures = chunkArray(currentSong.music.measures, chunkSize)
+let viewedBlock = blockMeasures[0]
+let currentBlock = 0
+let nextBlock = 1
+let nextBlockCursor = 0
+let currentBlockCursor = 0
+updateView(currentSong, viewedBlock)
+
+
+//SIMULATION
+let temp = 0
+setCurrentMeasure(temp)
+//setInterval(function(){ temp++; setCurrentMeasure(temp)}, 500);
+
+
+
+function chunkArray(myArray, chunk_size){
+    var index = 0;
+    var arrayLength = myArray.length;
+    var tempArray = [];
+    
+    for (index = 0; index < arrayLength; index += chunk_size) {
+        myChunk = myArray.slice(index, index+chunk_size);
+        tempArray.push(myChunk);
+    }
+
+    return tempArray;
+}
+
+
+
+
+function updateView(song, subMeasure) {
+    View.changeState(song, subMeasure, currentBlockCursor)
 
 }
 
-function nextSong(){
+function scrollSubView() {
+    console.log(currentBlock, ":", nextBlock)
+    if (currentBlockCursor == 0) {
+        nextBlockCursor = chunkSize - 1
+        viewedBlock[nextBlockCursor] = blockMeasures[nextBlock][nextBlockCursor]
+        updateView(currentSong, viewedBlock)
+    }else if (currentBlockCursor > 0) {
+        nextBlockCursor = currentBlockCursor - 1
+        viewedBlock[nextBlockCursor] = blockMeasures[nextBlock][nextBlockCursor]
+        updateView(currentSong, viewedBlock)
+    } 
+    if (currentBlockCursor == chunkSize - 1) {
+        currentMeasure = 0;
+        currentBlock++;
+        nextBlock++;
+        if (nextBlock == blockMeasures.length)
+            nextBlock = 0
+        if (currentBlock == blockMeasures.length)
+            currentBlock = 0
+
+    }
+
+
 
 }
 },{"./similarSongsRandomizer.js":2,"./view.js":4}],2:[function(require,module,exports){
@@ -42,9 +111,9 @@ exports.getFirstRandomSong = function () {
     var firstSong = songs[Math.floor(Math.random()*songs.length)];
     //console.log(firstSong.title)
     //TEST 
-    let allBlues = songs[0].music.measures
-    allBlues[0][1] = 'C7'
-    firstSong.music.measures = allBlues
+    firstSong = songs[21]
+    //allBlues[0][1] = 'C7'
+    //firstSong.music.measures = allBlues
     return firstSong
 }
 },{"./test.json":3}],3:[function(require,module,exports){
@@ -58,6 +127,7 @@ let key
 let bpm
 let timeSignature
 let chords = []
+let currentMeasure
 let connectChords
 
 //Dom elements
@@ -65,17 +135,27 @@ const chordPanel = document.getElementById("chords")
 const titleDiv = document.getElementById("songTitle")
 const composerDiv = document.getElementById("composer")
 const styleAndKeyDiv = document.getElementById("styleAndKey")
+//Grid generation
+for (let i = 0; i < 24; i++) {
+    let div = document.createElement("div");
+    div.id = "cell" + i
+    div.classList.add("cell")
+    chordPanel.appendChild(div)
+}
 
-exports.changeState = function (song) {
+exports.changeState = function (song, subMeasure, currentMeas) {
     title = song.title
     composer = song.composer
     style = song.style
     key = song.key
     bpm = song.bpm
     timeSignature = song.music.timeSignature
+    currentMeasure = currentMeas
     //Copy all measures
-    for (let i = 0; i < song.music.measures.length; i++) {
-        let temp = song.music.measures[i]
+    for (let i = 0; i < 24; i++)
+        chords.pop()
+    for (let i = 0; i < 24; i++) {
+        let temp = subMeasure[i]
         chords.push(temp)
     }
     render()
@@ -85,19 +165,18 @@ exports.changeState = function (song) {
 
 function render() {
     //Render chords
-    for (let i = 0; i < chords.length; i++) {
-        let div = document.createElement("div");
-        div.id = "cell" + i
-        div.classList.add("cell")
-        div.textContent = chords[i]
-        chordPanel.appendChild(div)
+    for (let i = 0; i < chordPanel.children.length; i++) {
+        chordPanel.children[i].textContent = chords[i]
+        if (i == currentMeasure)
+            chordPanel.children[i].classList.add("selectedCell")
+        else 
+            chordPanel.children[i].classList.remove("selectedCell")
     }
 
     //Render sidebar panel
     titleDiv.textContent = title
     composerDiv.textContent = composer
     styleAndKeyDiv.textContent = style + " in " + key
-    console.log(title)
 
 }
 },{}]},{},[1]);
