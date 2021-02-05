@@ -51,10 +51,21 @@
 
 .btn {
     position: relative;
-    margin: 40px 10px;
+    margin: 40px 5%;
 }
 
 #playStopButtons {
     background-color: lightgrey;
     color: lightsalmon;
+}
+
+#songInfos {
+    display: block;
+    background-color: lightskyblue;
+}
+
+.info {
+    position: relative;
+    width: 100%;
+    height: 20%;
 }
