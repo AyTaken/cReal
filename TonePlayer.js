@@ -201,3 +201,47 @@ Tone.Transport.scheduleRepeat((time) => {
     // use the callback time to schedule events
     osc.start(time).stop(time + 0.1);
 }, "8n");
+
+
+
+
+
+
+
+//TEST FATTI INSOMMA
+/* const Tone = require('tone');
+Tone.start();
+//create a synth and connect it to the main output (your speakers)
+const synth = new Tone.PolySynth().toDestination();
+synth.volume.value = -6
+
+//play a middle 'C' for the duration of an 8th note
+
+let button = document.getElementById("btn")
+button.onclick = function() {
+    Tone.Transport.start()
+}
+
+let chords = [[["C3", "E4", "G3"],["G3", "B4", "E3"]], [["G3", "B4", "E3"]], [["F3", "A4", "C3"]], [["A3", "C4", "E3"]]]
+let temp = []
+for (let i = 0; i < chords.length; i++) {
+    temp.push(i)
+}
+
+Tone.Transport.bpm.value = 120
+const seq = new Tone.Sequence((time, index) => {
+    let duration = 4 / chords[index].length
+    let durString = duration + "n"
+    let temp2 = []
+    for (let i = 0; i < chords[index].length; i++) {
+        temp2.push(i)      
+    }
+    
+    const seq2 = new Tone.Sequence((time2, id2) => {
+        synth.triggerAttackRelease(chords[index][id2], durString);
+        console.log(time, time2)
+        // subdivisions are given as subarrays
+    }, temp2, "4n").start(0)
+
+
+}, temp, "1m").start(0);*/
