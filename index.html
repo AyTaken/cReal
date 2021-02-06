@@ -1,4 +1,5 @@
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -6,28 +7,32 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://kit.fontawesome.com/c66d779da1.js" crossorigin="anonymous"></script>
 </head>
+
 <body>
     <div class="container">
         <div id="sidebar">
-            <div class= "sidebarColumn" id="playStopButtons">
+            <div class="sidebarColumn" id="playStopButtons">
                 <div class="btn fas fa-stop fa-4x"></div>
                 <div class="btn fas fa-play fa-4x"></div>
                 <div class="btn fas fa-pause fa-4x"></div>
             </div>
-            <div class= "sidebarColumn" id="songInfos">
+            <div class="sidebarColumn" id="songInfos">
                 <div class="info">Song:</div>
                 <div class="info" id="songTitle"></div>
                 <div class="info">Composer:</div>
                 <div class="info" id="composer"></div>
                 <div class="info" id="styleAndKey"></div>
             </div>
-            <div class= "sidebarColumn" id="changeSongSettings"></div>
-            <div class= "sidebarColumn" id="tempoSettings"></div>
+            <div class="sidebarColumn" id="changeSongSettings"></div>
+            <div class="sidebarColumn" id="tempoSettings">
+                <input type="range" label="tempo" units="bpm" min="0" max="240" step="1" value="120" onchange="currentSong.bpm(this.value)"> BPM
+                </input>
+            </div>
 
         </div>
         <div id="mainView">
             <div id="chords">
-                    
+
             </div>
             <div id="harmonicConnect">Harmonic Connect: Smoothness vs boldness</div>
 
@@ -38,6 +43,7 @@
 
 
     <script src="main.js"></script>
-    
+
 </body>
+
 </html>
