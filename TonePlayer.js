@@ -6,6 +6,11 @@ let songs = require('./test.json');
 let currentSong;
 let nextSong;
 let connectSong;
+//Lo stato può essere play, stop, pause 
+let state = "stop"
+let measureNumber = 0
+let loop = true
+
 
 exports.setCurrentSong = function(song) {
     currentSong = song;
@@ -14,6 +19,18 @@ exports.setCurrentSong = function(song) {
             console.log(Chord.getNotesChord(element[index]))
         }
     });
+}
+
+exports.setState = function(appState) {
+    state = appState
+    if (state == "play")
+        play()
+}
+
+exports.setNextAndConnect = function(nSong, cSong) {
+    nextSong = nSong
+    connectSong = cSong
+    loop = false
 }
 
 // Scheletro
@@ -72,11 +89,31 @@ exports.setConnectSong = function(song, type) {
 
 
 function play(song) {
-    measureNumber = 0;
     firstMeasure = song.music.measures[measureNumber]
     for (i = 0; i < song.music.measures.length; i++) {
         App.setCurrentMeasure(measureNumber)
         measureNumber++
+        /**
+         * if (check sullo stato: pause, stop)
+         *      se pause salva measureNumber ed esce dal for
+         *      se stop meausreNumber = 0 ed esce dal for
+         */
+        /**
+         * if (fine song: measureNumber == song.music.measures.length)
+         *      if (loop == true)
+         *          measureNumber = 0
+         *      else (loop == false) {
+         *          if (connectSong)
+         *              playConnectSong() --> "setCurrentMeasureConnect()"
+         *        
+         *          currentSong = nextSong
+         *          measureNumber = 0
+         *          
+         *      }
+         *          
+         *          
+         */
+        
     }
 
 }

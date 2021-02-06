@@ -1,4 +1,4 @@
-//const TonePlayer = require('./TonePlayer');
+const TonePlayer = require('./TonePlayer');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
 const View = require('./view.js')
 
@@ -33,27 +33,34 @@ currentSong = initialSong
 function setCurrentMeasure(measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
-    currentBlockCursor = currentMeasure % chunkSize
-    if (blockMeasures.length > 1)
-        scrollSubView();
     //Change nella view la misura illuminata
 }
 measuresLen = currentSong.music.measures.length
 
 
-let blockMeasures = chunkArray(currentSong.music.measures, chunkSize)
+/*let blockMeasures = chunkArray(currentSong.music.measures, chunkSize)
 let viewedBlock = blockMeasures[0]
 let currentBlock = 0
 let nextBlock = 1
 let nextBlockCursor = 0
 let currentBlockCursor = 0
+updateView(currentSong, viewedBlock)*/
+
+const maxSize = 24
+let viewedBlock = []
+for (let i = 0; i < maxSize; i++) {
+    viewedBlock.push(currentSong.music.measures[i])
+    
+}
+console.log(viewedBlock)
 updateView(currentSong, viewedBlock)
+
 
 
 //SIMULATION
 let temp = 0
 setCurrentMeasure(temp)
-//setInterval(function(){ temp++; setCurrentMeasure(temp)}, 500);
+//setInterval(function(){ temp++; setCurrentMeasure(temp)}, 2000);
 
 
 
@@ -71,11 +78,16 @@ function chunkArray(myArray, chunk_size){
 }
 
 function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, currentBlockCursor)
+    View.changeState(song, subMeasure, currentMeasure % maxSize)
 
 }
 
 function scrollSubView() {
+
+}
+
+//functio scollSubView V1
+/*function scrollSubView() {
     console.log(currentBlock, ":", nextBlock)
     if (currentBlockCursor == 0) {
         nextBlockCursor = chunkSize - 1
@@ -96,7 +108,4 @@ function scrollSubView() {
             currentBlock = 0
 
     }
-
-
-
-}
+}*/
