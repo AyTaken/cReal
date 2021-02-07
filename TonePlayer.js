@@ -90,32 +90,30 @@ exports.setConnectSong = function(song, type) {
 
 function play(song) {
     firstMeasure = song.music.measures[measureNumber]
-    for (i = 0; i < song.music.measures.length; i++) {
+    pausedMeasure = 0;
+    paused = false;
+    for (i = 0; i < song.music.measures.length && paused == false && state != "stop"; i++) {
+        if (pausedMeasure != 0)
+            measureNumber = pausedMeasure
         App.setCurrentMeasure(measureNumber)
         measureNumber++
-        /**
-         * if (check sullo stato: pause, stop)
-         *      se pause salva measureNumber ed esce dal for
-         *      se stop meausreNumber = 0 ed esce dal for
-         */
-        /**
-         * if (fine song: measureNumber == song.music.measures.length)
-         *      if (loop == true)
-         *          measureNumber = 0
-         *      else (loop == false) {
-         *          if (connectSong)
-         *              playConnectSong() --> "setCurrentMeasureConnect()"
-         *        
-         *          currentSong = nextSong
-         *          measureNumber = 0
-         *          
-         *      }
-         *          
-         *          
-         */
-        
+        if (state = "pause") {
+            paused = true
+            pausedMeasure = measureNumber - 1
+        }
+        if (state = "stop") {
+            pausedMeasure = 0
+            measureNumber = 0
+        }
+        if (measureNumber == song.music.measures.length) {
+            measureNumber = 0
+            if (loop == false) {
+                if (connectSong)
+                    playConnectSong() -- > "setCurrentMeasureConnect()"
+                currentSong = nextSong
+            }
+        }
     }
-
 }
 
 //var sampler = new Tone.Sampler({
@@ -153,24 +151,40 @@ function play(song) {
 //instruments['piano'].triggerAttack("A3");
 //});
 
-const sampler = new Tone.Sampler({
+const sampler_2 = new Tone.Sampler({
     urls: {
         "A2": "./piano_notes/A.wav",
-        "A#2": "./piano_notes/A#.wav",
-        "B2": "./piano_notes/B.wav",
-        "C3": "./piano_notes/C.wav",
-        "C#3": "./piano_notes/C#.wav",
-        "D4": "./piano_notes/D.wav",
-        "D#3": "./piano_notes/D#.wav",
-        "E3": "./piano_notes/E.wav",
-        "F4": "./piano_notes/F.wav",
-        "F#3": "./piano_notes/F#.wav",
-        "G3": "./piano_notes/G.wav",
-        "G#3": "./piano_notes/G#.wav",
+        //"A#2": "./piano_notes/A#.wav",
+        //"B2": "./piano_notes/B.wav",
+        //"C3": "./piano_notes/C.wav",
+        //"C#3": "./piano_notes/C#.wav",
+        //"D4": "./piano_notes/D.wav",
+        //"D#3": "./piano_notes/D#.wav",
+        //"E3": "./piano_notes/E.wav",
+        //"F4": "./piano_notes/F.wav",
+        //"F#3": "./piano_notes/F#.wav",
+        //"G3": "./piano_notes/G.wav",
+        //"G#3": "./piano_notes/G#.wav",
     },
     release: 1,
     //baseUrl: "https://tonejs.github.io/audio/salamander/",
 }).toDestination();
+
+const sampler = new Tone.Sampler({
+    A2: './piano_notes/A.wav'
+        //"A#2": "./piano_notes/A#.wav",
+        //"B2": "./piano_notes/B.wav",
+        //"C3": "./piano_notes/C.wav",
+        //"C#3": "./piano_notes/C#.wav",
+        //"D4": "./piano_notes/D.wav",
+        //"D#3": "./piano_notes/D#.wav",
+        //"E3": "./piano_notes/E.wav",
+        //"F4": "./piano_notes/F.wav",
+        //"F#3": "./piano_notes/F#.wav",
+        //"G3": "./piano_notes/G.wav",
+        //"G#3": "./piano_notes/G#.wav",
+        //baseUrl: "https://tonejs.github.io/audio/salamander/",
+}).chain(this.volume).toDestination;
 
 //Tone.loaded().then(() => {
 //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
@@ -209,11 +223,11 @@ Tone.Transport.scheduleRepeat((time) => {
 
 
 //TEST FATTI INSOMMA
-/* const Tone = require('tone');
+const Tone = require('tone');
 Tone.start();
 //create a synth and connect it to the main output (your speakers)
 const synth = new Tone.PolySynth().toDestination();
-synth.volume.value = -6
+sampler.volume.value = -12
 
 //play a middle 'C' for the duration of an 8th note
 
@@ -222,26 +236,26 @@ button.onclick = function() {
     Tone.Transport.start()
 }
 
-let chords = [[["C3", "E4", "G3"],["G3", "B4", "E3"]], [["G3", "B4", "E3"]], [["F3", "A4", "C3"]], [["A3", "C4", "E3"]]]
+let chords = currentSong.music.measures
 let temp = []
 for (let i = 0; i < chords.length; i++) {
     temp.push(i)
 }
 
-Tone.Transport.bpm.value = 120
+Tone.Transport.bpm.value = currentSong.bpm
 const seq = new Tone.Sequence((time, index) => {
     let duration = 4 / chords[index].length
     let durString = duration + "n"
     let temp2 = []
     for (let i = 0; i < chords[index].length; i++) {
-        temp2.push(i)      
+        temp2.push(i)
     }
-    
+
     const seq2 = new Tone.Sequence((time2, id2) => {
-        synth.triggerAttackRelease(chords[index][id2], durString);
+        sampler.triggerAttackRelease(chords[index][id2], durString);
         console.log(time, time2)
-        // subdivisions are given as subarrays
+            // subdivisions are given as subarrays
     }, temp2, "4n").start(0)
 
 
-}, temp, "1m").start(0);*/
+}, temp, "1m").start(0);
