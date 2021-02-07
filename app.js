@@ -1,20 +1,10 @@
-const TonePlayer = require('./TonePlayer');
+//const TonePlayer = require('./TonePlayer');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
 const View = require('./view.js')
 
-//Cannot use in browser
-//const fs = require('fs')
-//var contents = fs.readFileSync("./test.json", "utf8")
-//var songs = JSON.parse(json);
-
-
 let currentSong
-let measuresLen
 let nextSong 
 let currentMeasure = 0
-const chunkSize = 24
-
-
 
 exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
@@ -22,90 +12,88 @@ exports.setCurrentMeasure = function(measureNum) {
     //Change nella view la misura illuminata
 }
 
+function updateView(song, subMeasure) {
+    View.changeState(song, subMeasure, viewIndex)
+}
+
+
 //Initialization
 let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
 //TonePlayer.setCurrentSong(initialSong)
 currentSong = initialSong
+let measures = currentSong.music.measures
+
+
+
+
 
 
 
 //TEST
+
+
 function setCurrentMeasure(measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
+    scrollSubView()
     //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
 }
-measuresLen = currentSong.music.measures.length
 
-
-/*let blockMeasures = chunkArray(currentSong.music.measures, chunkSize)
-let viewedBlock = blockMeasures[0]
-let currentBlock = 0
-let nextBlock = 1
-let nextBlockCursor = 0
-let currentBlockCursor = 0
-updateView(currentSong, viewedBlock)*/
 
 const maxSize = 24
 let viewedBlock = []
+let viewIndex = 0
+let finalShift = 0
 for (let i = 0; i < maxSize; i++) {
-    viewedBlock.push(currentSong.music.measures[i])
-    
+    viewedBlock.push(measures[i])  
 }
-console.log(viewedBlock)
-updateView(currentSong, viewedBlock)
-
-
 
 //SIMULATION
 let temp = 0
 setCurrentMeasure(temp)
-//setInterval(function(){ temp++; setCurrentMeasure(temp)}, 2000);
-
-
-
-function chunkArray(myArray, chunk_size){
-    var index = 0;
-    var arrayLength = myArray.length;
-    var tempArray = [];
-    
-    for (index = 0; index < arrayLength; index += chunk_size) {
-        myChunk = myArray.slice(index, index+chunk_size);
-        tempArray.push(myChunk);
-    }
-
-    return tempArray;
-}
-
-function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, currentMeasure % maxSize)
-
-}
+setInterval(function(){ 
+    temp++; 
+    if (temp == currentSong.music.measures.length)
+        temp = 0
+    setCurrentMeasure(temp)
+}, 200);
 
 function scrollSubView() {
+    viewIndex = (currentMeasure + finalShift) % maxSize
+    console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
+    console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
 
+    viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
+    if (currentMeasure == measures.length - 1) {
+        finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
+    }
+    console.log(finalShift)
 }
 
-//functio scollSubView V1
-/*function scrollSubView() {
-    console.log(currentBlock, ":", nextBlock)
-    if (currentBlockCursor == 0) {
-        nextBlockCursor = chunkSize - 1
-        viewedBlock[nextBlockCursor] = blockMeasures[nextBlock][nextBlockCursor]
-        updateView(currentSong, viewedBlock)
-    }else if (currentBlockCursor > 0) {
-        nextBlockCursor = currentBlockCursor - 1
-        viewedBlock[nextBlockCursor] = blockMeasures[nextBlock][nextBlockCursor]
-        updateView(currentSong, viewedBlock)
-    } 
-    if (currentBlockCursor == chunkSize - 1) {
-        currentMeasure = 0;
-        currentBlock++;
-        nextBlock++;
-        if (nextBlock == blockMeasures.length)
-            nextBlock = 0
-        if (currentBlock == blockMeasures.length)
-            currentBlock = 0
+function circularMotion(num, addSocNum, mod) {
+    let ris
+    //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
+    if (addSocNum >= 0) {
+        ris = num + addSocNum
+        ris = ris % mod
+    } else {
+        let opposite = addSocNum + mod
+        ris = num + opposite
+        ris = ris % mod
+    }
+    return ris
+}
 
+/*function scrollSubView() {
+    viewIndex = (currentMeasure + finalShift) % maxSize
+    console.log("Current measure: ", currentMeasure, " + Viewed index: ", viewIndex)
+    if (currentMeasure > 0) {
+        //console.log("Before: ", circularMotion(currentMeasure, -1, maxSize), "after: ", circularMotion(currentMeasure, maxSize - 1, measures.length))
+        viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
+        if (currentMeasure == measures.length - 1) {
+            finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
+        }
+        //console.log(finalShift)
     }
 }*/
