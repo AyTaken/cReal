@@ -75,3 +75,14 @@
 .selectedCell {
     background-color: lightsalmon;
 }
+
+#changeSongSettings {
+    display: block;
+}
+
+.songBtn {
+    position: relative;
+    width: auto;
+    margin-left: 10%;
+    height: 20%;
+}

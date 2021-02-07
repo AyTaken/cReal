@@ -23,11 +23,7 @@ let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
 //TonePlayer.setCurrentSong(initialSong)
 currentSong = initialSong
 let measures = currentSong.music.measures
-
-
-
-
-
+setKeyDropdown()
 
 
 //TEST
@@ -58,18 +54,18 @@ setInterval(function(){
     if (temp == currentSong.music.measures.length)
         temp = 0
     setCurrentMeasure(temp)
-}, 200);
+}, 2000);
 
 function scrollSubView() {
     viewIndex = (currentMeasure + finalShift) % maxSize
-    console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
-    console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
+    //console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
+    //console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
 
     viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
     if (currentMeasure == measures.length - 1) {
         finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
     }
-    console.log(finalShift)
+    //console.log(finalShift)
 }
 
 function circularMotion(num, addSocNum, mod) {
@@ -86,18 +82,36 @@ function circularMotion(num, addSocNum, mod) {
     return ris
 }
 
-/*function scrollSubView() {
-    viewIndex = (currentMeasure + finalShift) % maxSize
-    console.log("Current measure: ", currentMeasure, " + Viewed index: ", viewIndex)
-    if (currentMeasure > 0) {
-        //console.log("Before: ", circularMotion(currentMeasure, -1, maxSize), "after: ", circularMotion(currentMeasure, maxSize - 1, measures.length))
-        viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
-        if (currentMeasure == measures.length - 1) {
-            finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
+
+function setKeyDropdown() {
+    let noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+    let minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"] 
+
+    let dropdown = document.getElementById("keys")
+    
+    if (currentSong.key.includes("-")) {
+        console.log("OKS")
+        for (let i = 0; i < dropdown.children.length; i++) {
+            dropdown.children[i].textContent = minor[i]
+            dropdown.children[i].value = minor[i]
         }
-        //console.log(finalShift)
+    } else {
+        
+        for (let i = 0; i < dropdown.children.length; i++) {
+            dropdown.children[i].textContent = noAlt[i]
+            dropdown.children[i].value = noAlt[i]
+        }
     }
-}*/
+}
+
+document.getElementById("onClickSubmit").onclick = function (){
+    let nextKey = document.getElementById("keys").value
+    if (currentSong.key == nextKey) {
+        console.log("NOP")
+        return
+    }
+    
+}
 },{"./similarSongsRandomizer.js":2,"./view.js":4}],2:[function(require,module,exports){
 let songs = require('./test.json');
 
@@ -105,7 +119,7 @@ exports.getFirstRandomSong = function() {
     var firstSong = songs[Math.floor(Math.random() * songs.length)];
     //console.log(firstSong.title)
     //TEST 
-    firstSong = songs[21]
+    firstSong = songs[18]
         //allBlues[0][1] = 'C7'
         //firstSong.music.measures = allBlues
     return firstSong

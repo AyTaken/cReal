@@ -22,11 +22,7 @@ let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
 //TonePlayer.setCurrentSong(initialSong)
 currentSong = initialSong
 let measures = currentSong.music.measures
-
-
-
-
-
+setKeyDropdown()
 
 
 //TEST
@@ -57,18 +53,18 @@ setInterval(function(){
     if (temp == currentSong.music.measures.length)
         temp = 0
     setCurrentMeasure(temp)
-}, 200);
+}, 2000);
 
 function scrollSubView() {
     viewIndex = (currentMeasure + finalShift) % maxSize
-    console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
-    console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
+    //console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
+    //console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
 
     viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
     if (currentMeasure == measures.length - 1) {
         finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
     }
-    console.log(finalShift)
+    //console.log(finalShift)
 }
 
 function circularMotion(num, addSocNum, mod) {
@@ -85,15 +81,44 @@ function circularMotion(num, addSocNum, mod) {
     return ris
 }
 
-/*function scrollSubView() {
-    viewIndex = (currentMeasure + finalShift) % maxSize
-    console.log("Current measure: ", currentMeasure, " + Viewed index: ", viewIndex)
-    if (currentMeasure > 0) {
-        //console.log("Before: ", circularMotion(currentMeasure, -1, maxSize), "after: ", circularMotion(currentMeasure, maxSize - 1, measures.length))
-        viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
-        if (currentMeasure == measures.length - 1) {
-            finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
+
+
+
+const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
+
+function setKeyDropdown() { 
+
+    let dropdown = document.getElementById("keys")
+    
+    if (currentSong.key.includes("-")) {
+        for (let i = 0; i < dropdown.children.length; i++) {
+            dropdown.children[i].textContent = minor[i]
+            dropdown.children[i].value = minor[i]
         }
-        //console.log(finalShift)
+    } else {
+        
+        for (let i = 0; i < dropdown.children.length; i++) {
+            dropdown.children[i].textContent = noAlt[i]
+            dropdown.children[i].value = noAlt[i]
+        }
     }
-}*/
+}
+
+document.getElementById("onClickSubmit").onclick = function (){
+    let semitones 
+    let nextKey = document.getElementById("keys").value
+    if (currentSong.key == nextKey) {
+        //console.log("NOP")
+        return
+    } else {
+        if (currentSong.key.includes("-")) {
+            semitones = minor.indexOf(value) - minor.indexOf(currentSong.key)
+        } else {
+            semitones = noAlt.indexOf(value) - noAlt.indexOf(currentSong.key)
+        }
+    }
+
+    
+    
+}

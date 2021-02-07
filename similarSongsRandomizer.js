@@ -4,7 +4,7 @@ exports.getFirstRandomSong = function() {
     var firstSong = songs[Math.floor(Math.random() * songs.length)];
     //console.log(firstSong.title)
     //TEST 
-    firstSong = songs[21]
+    firstSong = songs[18]
         //allBlues[0][1] = 'C7'
         //firstSong.music.measures = allBlues
     return firstSong
