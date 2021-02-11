@@ -1,5 +1,4 @@
-const { Tone } = require("tone/build/esm/core/Tone")
-
+const Tone = require('tone');
 let button = document.getElementById("btn")
 button.onclick = function() {
     state = "play"
@@ -55,6 +54,15 @@ function play(song) {
             }
         }, temp2, "4n").start(0)
     }, temp, "1m").start(0);
+
+    // Chiamare la next song solo in play?
+
+
+
+
+
+
+
 
     // prima prova con for    
     for (i = 0; i < song.music.measures.length && paused == false && state != "stop"; i++) {
