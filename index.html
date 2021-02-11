@@ -13,7 +13,7 @@
         <div id="sidebar">
             <div class="sidebarColumn" id="playStopButtons">
                 <div class="btn fas fa-stop fa-4x"></div>
-                <div class="btn fas fa-play fa-4x"></div>
+                <div id="play" class="btn fas fa-play fa-4x"></div>
                 <div class="btn fas fa-pause fa-4x"></div>
             </div>
             <div class="sidebarColumn" id="songInfos">
@@ -50,7 +50,7 @@
                 <div class="songBtn" id="differentKey"></div>
             </div>
             <div class="sidebarColumn" id="tempoSettings">
-                <input type="range" label="tempo" units="bpm" min="0" max="240" step="1" value="120" onchange="currentSong.bpm(this.value)"> BPM
+                <input id="sliderTempo" type="range" label="tempo" units="bpm" min="0" max="240" step="1" value="120"> BPM
                 </input>
             </div>
 

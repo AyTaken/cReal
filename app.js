@@ -1,6 +1,9 @@
-//const TonePlayer = require('./TonePlayer');
+const TonePlayer = require('./TonePlayer.js');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
-const View = require('./view.js')
+const View = require('./view.js');
+
+const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
+const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 let currentSong
 let nextSong 
@@ -9,7 +12,9 @@ let currentMeasure = 0
 exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
+    scrollSubView()
     //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
 }
 
 function updateView(song, subMeasure) {
@@ -21,8 +26,16 @@ function updateView(song, subMeasure) {
 let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
 //TonePlayer.setCurrentSong(initialSong)
 currentSong = initialSong
+TonePlayer.setCurrentSong(currentSong)
 let measures = currentSong.music.measures
 setKeyDropdown()
+
+
+//TEST TONEJS
+let playBtn = document.getElementById("play")
+playBtn.onclick = function () {
+    TonePlayer.setState("play")
+} 
 
 
 //TEST
@@ -41,9 +54,10 @@ const maxSize = 24
 let viewedBlock = []
 let viewIndex = 0
 let finalShift = 0
-for (let i = 0; i < maxSize; i++) {
-    viewedBlock.push(measures[i])  
+for (let i = 0; i < measures.length && i < maxSize; i++) {
+    viewedBlock.push(measures[i]) 
 }
+
 
 //SIMULATION
 let temp = 0
@@ -57,14 +71,13 @@ setInterval(function(){
 
 function scrollSubView() {
     viewIndex = (currentMeasure + finalShift) % maxSize
-    //console.log("current mes: ", currentMeasure, "-->",circularMotion(currentMeasure, maxSize-1, measures.length))
-    //console.log(viewedBlock[circularMotion(viewIndex, -1, maxSize)], "-->", measures[circularMotion(currentMeasure, maxSize - 1, measures.length)])
 
+    if (measures.length < maxSize)
+        return
     viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
     if (currentMeasure == measures.length - 1) {
         finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
     }
-    //console.log(finalShift)
 }
 
 function circularMotion(num, addSocNum, mod) {
@@ -84,8 +97,6 @@ function circularMotion(num, addSocNum, mod) {
 
 
 
-const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
-const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 function setKeyDropdown() { 
 
