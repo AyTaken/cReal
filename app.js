@@ -1,15 +1,16 @@
 const TonePlayer = require('./TonePlayer.js');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
 const View = require('./view.js');
+const { connectSeries } = require('tone');
 
 const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 let currentSong
-let nextSong 
+let nextSong
 let currentMeasure = 0
 
-exports.setCurrentMeasure = function(measureNum) {
+exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
     scrollSubView()
@@ -23,52 +24,42 @@ function updateView(song, subMeasure) {
 
 
 //Initialization
-let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
-//TonePlayer.setCurrentSong(initialSong)
-currentSong = initialSong
-TonePlayer.setCurrentSong(currentSong)
+currentSong = SimilarSongsRandomizer.getFirstRandomSong();
+console.log(currentSong)
+//TODO -> CAP SU TUTTE LE NEXT SONG
 let measures = currentSong.music.measures
+measures = capChords(measures, currentSong.music.timeSignature)
+TonePlayer.setCurrentSong(currentSong)
 setKeyDropdown()
 
 
-//TEST TONEJS
 let playBtn = document.getElementById("play")
+let stopBtn = document.getElementById("stop")
+let pauseBtn = document.getElementById("pause")
 playBtn.onclick = function () {
     TonePlayer.setState("play")
-} 
-
-
-//TEST
-
-
-function setCurrentMeasure(measureNum) {
-    //Refers to the current played measure by TonePlayer
-    currentMeasure = measureNum;
-    scrollSubView()
-    //Change nella view la misura illuminata
-    updateView(currentSong, viewedBlock)
+}
+stopBtn.onclick = function () {
+    TonePlayer.setState("stop")
+}
+pauseBtn.onclick = function () {
+    TonePlayer.setState("pause")
 }
 
 
+//GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
 let viewedBlock = []
 let viewIndex = 0
 let finalShift = 0
 for (let i = 0; i < measures.length && i < maxSize; i++) {
-    viewedBlock.push(measures[i]) 
+    viewedBlock.push(measures[i])
 }
+updateView(currentSong, viewedBlock)
 
 
-//SIMULATION
-let temp = 0
-setCurrentMeasure(temp)
-setInterval(function(){ 
-    temp++; 
-    if (temp == currentSong.music.measures.length)
-        temp = 0
-    setCurrentMeasure(temp)
-}, 2000);
 
+//FUNZIONI VIEW ACCORDI
 function scrollSubView() {
     viewIndex = (currentMeasure + finalShift) % maxSize
 
@@ -95,20 +86,17 @@ function circularMotion(num, addSocNum, mod) {
 }
 
 
-
-
-
-function setKeyDropdown() { 
+function setKeyDropdown() {
 
     let dropdown = document.getElementById("keys")
-    
+
     if (currentSong.key.includes("-")) {
         for (let i = 0; i < dropdown.children.length; i++) {
             dropdown.children[i].textContent = minor[i]
             dropdown.children[i].value = minor[i]
         }
     } else {
-        
+
         for (let i = 0; i < dropdown.children.length; i++) {
             dropdown.children[i].textContent = noAlt[i]
             dropdown.children[i].value = noAlt[i]
@@ -116,8 +104,8 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function (){
-    let semitones 
+document.getElementById("onClickSubmit").onclick = function () {
+    let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
         //console.log("NOP")
@@ -129,7 +117,27 @@ document.getElementById("onClickSubmit").onclick = function (){
             semitones = noAlt.indexOf(value) - noAlt.indexOf(currentSong.key)
         }
     }
+}
 
-    
-    
+
+//Cap sul massimo di accordi suonabili, per gestire il caso di accordi tra parentesi
+//ritorna delle measure tagliate in base al timeSignature
+function capChords(songMeasures, ts) {
+    let cap = extractTimeSignature(ts)
+    for (let i = 0; i < songMeasures.length; i++) {
+        let popNumber = songMeasures[i].length - cap
+        if (popNumber > 0) {
+            for (let j = 0; j < popNumber; j++) {
+                songMeasures[i].pop()
+            }
+        }
+    }
+    return songMeasures
+}
+
+function extractTimeSignature(ts) {
+    let ris = ts[0]
+    if (ts == 12)
+        ris = 6
+    return ris
 }

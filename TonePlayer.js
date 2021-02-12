@@ -2,19 +2,30 @@ const Tone = require('tone');
 const Controller = require('./app.js')
 const Chord = require('./chords.js');
 
+//polysynth temporaneo
+const synth = new Tone.PolySynth().toDestination();
+synth.volume.value = -12
+
+//Tone.Trasport options
+Tone.context.latencyHint = "interactive"
+
 
 let currentSong = {};
+let partiture
+let part
+
 let nextSong = {};
 let connectSong = {};
 //Lo stato può essere play, stop, pause 
 let state = "stop"
-let measureNumber = 0
+let currentMeasure = 0
 let loop = true
 
 
 exports.setCurrentSong = function (song) {
     Object.assign(currentSong, song)
-    currentSong.bpm = 120
+    partiture = generatePartiture()
+    console.log(partiture)
 }
 
 exports.setNextSong = function (song) {
@@ -32,18 +43,35 @@ console.log(nextSong)
 console.log(connectSong)*/
 
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function (){
+sliderBpm.onchange = function () {
     currentSong.bpm = sliderBpm.value
+    Tone.Transport.bpm.value = currentSong.bpm
+
+    for (let i = 0; i < partiture.length; i++) {
+        partiture[i].duration = Tone.Time({"4n": partiture[i].subdiv}).valueOf()
+    }
 }
 
-function play() {
+/*function play() {
     Tone.Transport.bpm.value = currentSong.bpm
     Tone.Transport.start();
     let chords = currentSong.music.measures
+
+    //Creazione temp per scheduling sequence
     let temp = []
     for (let i = 0; i < chords.length; i++) {
-        temp.push(i)
+        if (chords[i].length > 1) {
+            let temp2 = []
+            for (let j = 0; j < chords[i].length; j++) {
+                temp2.push(j)
+        }
+        temp.push(temp2)
+    
+        } else {
+            temp.push(0)
+        } 
     }
+
     //firstMeasure = currentSong.music.measures[measureNumber]
     pausedMeasure = 0;
     //paused = false;
@@ -83,16 +111,97 @@ function play() {
             }
         }, temp2, "4n").start(0)
     }, temp, "1m").start(0);
+}*/
+
+//Funzione per generare l'oggetto da dare a ToneEvent.Part
+function generatePartiture() {
+    Tone.Transport.bpm.value = sliderBpm.value
+    let timeSignature = extractTimeSignature(currentSong.music.timeSignature)
+    Tone.Transport.timeSignature = timeSignature
+    let chords = currentSong.music.measures
+
+    let partitureTemp = []
+
+    //CALCOLO DURATE
+    for (let i = 0; i < chords.length; i++) {
+        let duration = []
+
+        for (let j = 0; j < chords[i].length; j++) {
+            duration.push(Math.floor(timeSignature / chords[i].length))
+        }
+        if (timeSignature % chords[i].length != 0) {
+            let sum = 0
+            for (let j = 1; j < duration.length; j++)
+                sum = sum + duration[j]
+            duration[0] = timeSignature - sum
+        }
+
+
+        //CREAZIONE PARTITURA
+        let count = 0
+        for (let j = 0; j < chords[i].length; j++) {
+            let temp = { time: " ", measure: " ", notes: " ", duration: " " , subdiv: []}
+            temp.measure = i
+            if (j > 0)
+                count = count + duration[j - 1]
+            temp.time = i + ":" + count
+            temp.notes = Chord.getNotesChord(chords[i][j])
+            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf() * 0.9
+            temp.subdiv = duration[j]
+            partitureTemp.push(temp)
+        }
+    }
+
+    part = new Tone.Part(((time, chord) => {
+        // the notes given as the second element in the array
+        // will be passed in as the second argument
+        synth.triggerAttackRelease(chord.notes, chord.duration, time);
+        if (currentMeasure != chord.measure) {
+            currentMeasure = chord.measure
+            Controller.setCurrentMeasure(currentMeasure)
+        }
+    }), partitureTemp);
+    part.humanize = true
+    part.loop = true
+    part.loopStart = partitureTemp[0].time
+    part.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)
+
+    return partitureTemp
 }
 
+function play() {
+    Tone.start()
+    part.start()
+    Tone.Transport.start()
+}
+
+function stop() {
+    Tone.Transport.stop()
+    Controller.setCurrentMeasure(0)
+}
+
+function pause() {
+    Tone.Transport.pause()
+}
 
 // Chiamare la next song solo in play?
 
 
 exports.setState = function (appState) {
     state = appState
-    if (state == "play")
-        play()
+    switch (state) {
+        case "play":
+            play()
+            break;
+        case "stop":
+            stop()
+            break;
+        case "pause":
+            pause()
+            break;
+        default:
+            break;
+    }
 }
 
 // Non credo ci sia piu il bisogno...
@@ -100,7 +209,7 @@ exports.setState = function (appState) {
     nextSong = nSong
     connectSong = cSong
     loop = false
-
+ 
 }*/
 
 // Scheletro
@@ -127,9 +236,9 @@ exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
     loopChords.loopEnd = nMeasures; // "1m" one measure
 }
 
-exports.setNextSong = function (song) {
+/*exports.setNextSong = function (song) {
     nextSong = song;
-}
+}*/
 
 exports.changeSong = function (song_1, song_2) {
     for (let index = 0; index < song_1.music.measures.length; index++) {
@@ -153,9 +262,9 @@ exports.chooseNextSong = function (song) {
 
 }
 
-exports.setConnectSong = function (song, type) {
+/*exports.setConnectSong = function (song, type) {
     connectSong = song;
-}
+}*/
 
 
 //DA ELIMINARE?
@@ -268,21 +377,29 @@ Tone.start()
 
 /*const resumeBtn = document.getElementById("resumeButton");
 resumeBtn.onclick = function () {
-
+ 
     Tone.loaded().then(() => {
         sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
-
+ 
     })
     // synth.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n")
     //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
 }
-
+ 
 document.querySelector("tone-slider").addEventListener("input", (e) => Tone.Transport.bpm.value = parseFloat(e.target.value));
 //document.querySelector("tone-step-sequencer").addEventListener("trigger", ({ detail }) => {
 //keys.player(detail.row).start(detail.time, 0, "16t");
 //});
-
+ 
 Tone.Transport.scheduleRepeat((time) => {
     // use the callback time to schedule events
     osc.start(time).stop(time + 0.1);
 }, "8n");*/
+
+
+function extractTimeSignature(ts) {
+    let ris = ts[0]
+    if (ts == 12)
+        ris = 6
+    return ris
+}

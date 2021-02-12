@@ -3,19 +3,30 @@ const Tone = require('tone');
 const Controller = require('./app.js')
 const Chord = require('./chords.js');
 
+//polysynth temporaneo
+const synth = new Tone.PolySynth().toDestination();
+synth.volume.value = -12
+
+//Tone.Trasport options
+Tone.context.latencyHint = "interactive"
+
 
 let currentSong = {};
+let partiture
+let part
+
 let nextSong = {};
 let connectSong = {};
 //Lo stato può essere play, stop, pause 
 let state = "stop"
-let measureNumber = 0
+let currentMeasure = 0
 let loop = true
 
 
 exports.setCurrentSong = function (song) {
     Object.assign(currentSong, song)
-    currentSong.bpm = 120
+    partiture = generatePartiture()
+    console.log(partiture)
 }
 
 exports.setNextSong = function (song) {
@@ -33,19 +44,35 @@ console.log(nextSong)
 console.log(connectSong)*/
 
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function (){
+sliderBpm.onchange = function () {
     currentSong.bpm = sliderBpm.value
+    Tone.Transport.bpm.value = currentSong.bpm
+
+    for (let i = 0; i < partiture.length; i++) {
+        partiture[i].duration = Tone.Time({"4n": partiture[i].subdiv}).valueOf()
+    }
 }
 
-function play() {
+/*function play() {
     Tone.Transport.bpm.value = currentSong.bpm
-    console.log(Tone.Transport.bpm.value)
     Tone.Transport.start();
     let chords = currentSong.music.measures
+
+    //Creazione temp per scheduling sequence
     let temp = []
     for (let i = 0; i < chords.length; i++) {
-        temp.push(i)
+        if (chords[i].length > 1) {
+            let temp2 = []
+            for (let j = 0; j < chords[i].length; j++) {
+                temp2.push(j)
+        }
+        temp.push(temp2)
+    
+        } else {
+            temp.push(0)
+        } 
     }
+
     //firstMeasure = currentSong.music.measures[measureNumber]
     pausedMeasure = 0;
     //paused = false;
@@ -85,16 +112,97 @@ function play() {
             }
         }, temp2, "4n").start(0)
     }, temp, "1m").start(0);
+}*/
+
+//Funzione per generare l'oggetto da dare a ToneEvent.Part
+function generatePartiture() {
+    Tone.Transport.bpm.value = sliderBpm.value
+    let timeSignature = extractTimeSignature(currentSong.music.timeSignature)
+    Tone.Transport.timeSignature = timeSignature
+    let chords = currentSong.music.measures
+
+    let partitureTemp = []
+
+    //CALCOLO DURATE
+    for (let i = 0; i < chords.length; i++) {
+        let duration = []
+
+        for (let j = 0; j < chords[i].length; j++) {
+            duration.push(Math.floor(timeSignature / chords[i].length))
+        }
+        if (timeSignature % chords[i].length != 0) {
+            let sum = 0
+            for (let j = 1; j < duration.length; j++)
+                sum = sum + duration[j]
+            duration[0] = timeSignature - sum
+        }
+
+
+        //CREAZIONE PARTITURA
+        let count = 0
+        for (let j = 0; j < chords[i].length; j++) {
+            let temp = { time: " ", measure: " ", notes: " ", duration: " " , subdiv: []}
+            temp.measure = i
+            if (j > 0)
+                count = count + duration[j - 1]
+            temp.time = i + ":" + count
+            temp.notes = Chord.getNotesChord(chords[i][j])
+            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf() * 0.9
+            temp.subdiv = duration[j]
+            partitureTemp.push(temp)
+        }
+    }
+
+    part = new Tone.Part(((time, chord) => {
+        // the notes given as the second element in the array
+        // will be passed in as the second argument
+        synth.triggerAttackRelease(chord.notes, chord.duration, time);
+        if (currentMeasure != chord.measure) {
+            currentMeasure = chord.measure
+            Controller.setCurrentMeasure(currentMeasure)
+        }
+    }), partitureTemp);
+    part.humanize = true
+    part.loop = true
+    part.loopStart = partitureTemp[0].time
+    part.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)
+
+    return partitureTemp
 }
 
+function play() {
+    Tone.start()
+    part.start()
+    Tone.Transport.start()
+}
+
+function stop() {
+    Tone.Transport.stop()
+    Controller.setCurrentMeasure(0)
+}
+
+function pause() {
+    Tone.Transport.pause()
+}
 
 // Chiamare la next song solo in play?
 
 
 exports.setState = function (appState) {
     state = appState
-    if (state == "play")
-        play()
+    switch (state) {
+        case "play":
+            play()
+            break;
+        case "stop":
+            stop()
+            break;
+        case "pause":
+            pause()
+            break;
+        default:
+            break;
+    }
 }
 
 // Non credo ci sia piu il bisogno...
@@ -102,7 +210,7 @@ exports.setState = function (appState) {
     nextSong = nSong
     connectSong = cSong
     loop = false
-
+ 
 }*/
 
 // Scheletro
@@ -129,9 +237,9 @@ exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
     loopChords.loopEnd = nMeasures; // "1m" one measure
 }
 
-exports.setNextSong = function (song) {
+/*exports.setNextSong = function (song) {
     nextSong = song;
-}
+}*/
 
 exports.changeSong = function (song_1, song_2) {
     for (let index = 0; index < song_1.music.measures.length; index++) {
@@ -155,9 +263,9 @@ exports.chooseNextSong = function (song) {
 
 }
 
-exports.setConnectSong = function (song, type) {
+/*exports.setConnectSong = function (song, type) {
     connectSong = song;
-}
+}*/
 
 
 //DA ELIMINARE?
@@ -270,37 +378,46 @@ Tone.start()
 
 /*const resumeBtn = document.getElementById("resumeButton");
 resumeBtn.onclick = function () {
-
+ 
     Tone.loaded().then(() => {
         sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
-
+ 
     })
     // synth.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n")
     //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
 }
-
+ 
 document.querySelector("tone-slider").addEventListener("input", (e) => Tone.Transport.bpm.value = parseFloat(e.target.value));
 //document.querySelector("tone-step-sequencer").addEventListener("trigger", ({ detail }) => {
 //keys.player(detail.row).start(detail.time, 0, "16t");
 //});
-
+ 
 Tone.Transport.scheduleRepeat((time) => {
     // use the callback time to schedule events
     osc.start(time).stop(time + 0.1);
 }, "8n");*/
+
+
+function extractTimeSignature(ts) {
+    let ris = ts[0]
+    if (ts == 12)
+        ris = 6
+    return ris
+}
 },{"./app.js":2,"./chords.js":3,"tone":4}],2:[function(require,module,exports){
 const TonePlayer = require('./TonePlayer.js');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
 const View = require('./view.js');
+const { connectSeries } = require('tone');
 
 const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 let currentSong
-let nextSong 
+let nextSong
 let currentMeasure = 0
 
-exports.setCurrentMeasure = function(measureNum) {
+exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
     scrollSubView()
@@ -314,52 +431,42 @@ function updateView(song, subMeasure) {
 
 
 //Initialization
-let initialSong = SimilarSongsRandomizer.getFirstRandomSong();
-//TonePlayer.setCurrentSong(initialSong)
-currentSong = initialSong
-TonePlayer.setCurrentSong(currentSong)
+currentSong = SimilarSongsRandomizer.getFirstRandomSong();
+console.log(currentSong)
+//TODO -> CAP SU TUTTE LE NEXT SONG
 let measures = currentSong.music.measures
+measures = capChords(measures, currentSong.music.timeSignature)
+TonePlayer.setCurrentSong(currentSong)
 setKeyDropdown()
 
 
-//TEST TONEJS
 let playBtn = document.getElementById("play")
+let stopBtn = document.getElementById("stop")
+let pauseBtn = document.getElementById("pause")
 playBtn.onclick = function () {
     TonePlayer.setState("play")
-} 
-
-
-//TEST
-
-
-function setCurrentMeasure(measureNum) {
-    //Refers to the current played measure by TonePlayer
-    currentMeasure = measureNum;
-    scrollSubView()
-    //Change nella view la misura illuminata
-    updateView(currentSong, viewedBlock)
+}
+stopBtn.onclick = function () {
+    TonePlayer.setState("stop")
+}
+pauseBtn.onclick = function () {
+    TonePlayer.setState("pause")
 }
 
 
+//GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
 let viewedBlock = []
 let viewIndex = 0
 let finalShift = 0
 for (let i = 0; i < measures.length && i < maxSize; i++) {
-    viewedBlock.push(measures[i]) 
+    viewedBlock.push(measures[i])
 }
+updateView(currentSong, viewedBlock)
 
 
-//SIMULATION
-let temp = 0
-setCurrentMeasure(temp)
-setInterval(function(){ 
-    temp++; 
-    if (temp == currentSong.music.measures.length)
-        temp = 0
-    setCurrentMeasure(temp)
-}, 2000);
 
+//FUNZIONI VIEW ACCORDI
 function scrollSubView() {
     viewIndex = (currentMeasure + finalShift) % maxSize
 
@@ -386,20 +493,17 @@ function circularMotion(num, addSocNum, mod) {
 }
 
 
-
-
-
-function setKeyDropdown() { 
+function setKeyDropdown() {
 
     let dropdown = document.getElementById("keys")
-    
+
     if (currentSong.key.includes("-")) {
         for (let i = 0; i < dropdown.children.length; i++) {
             dropdown.children[i].textContent = minor[i]
             dropdown.children[i].value = minor[i]
         }
     } else {
-        
+
         for (let i = 0; i < dropdown.children.length; i++) {
             dropdown.children[i].textContent = noAlt[i]
             dropdown.children[i].value = noAlt[i]
@@ -407,8 +511,8 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function (){
-    let semitones 
+document.getElementById("onClickSubmit").onclick = function () {
+    let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
         //console.log("NOP")
@@ -420,11 +524,31 @@ document.getElementById("onClickSubmit").onclick = function (){
             semitones = noAlt.indexOf(value) - noAlt.indexOf(currentSong.key)
         }
     }
-
-    
-    
 }
-},{"./TonePlayer.js":1,"./similarSongsRandomizer.js":5,"./view.js":7}],3:[function(require,module,exports){
+
+
+//Cap sul massimo di accordi suonabili, per gestire il caso di accordi tra parentesi
+//ritorna delle measure tagliate in base al timeSignature
+function capChords(songMeasures, ts) {
+    let cap = extractTimeSignature(ts)
+    for (let i = 0; i < songMeasures.length; i++) {
+        let popNumber = songMeasures[i].length - cap
+        if (popNumber > 0) {
+            for (let j = 0; j < popNumber; j++) {
+                songMeasures[i].pop()
+            }
+        }
+    }
+    return songMeasures
+}
+
+function extractTimeSignature(ts) {
+    let ris = ts[0]
+    if (ts == 12)
+        ris = 6
+    return ris
+}
+},{"./TonePlayer.js":1,"./similarSongsRandomizer.js":5,"./view.js":7,"tone":4}],3:[function(require,module,exports){
 const chromaSharp = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"]
 
 exports.getNotesChord = function (chord) {
@@ -650,7 +774,8 @@ exports.getFirstRandomSong = function() {
     var firstSong = songs[Math.floor(Math.random() * songs.length)];
     //console.log(firstSong.title)
     //TEST 
-    //firstSong = songs[0]
+    //17 -> ruby my dear
+    firstSong = songs[0]
         //allBlues[0][1] = 'C7'
         //firstSong.music.measures = allBlues
     return firstSong
