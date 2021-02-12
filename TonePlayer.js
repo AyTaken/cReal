@@ -25,7 +25,6 @@ let loop = true
 exports.setCurrentSong = function (song) {
     Object.assign(currentSong, song)
     partiture = generatePartiture()
-    console.log(partiture)
 }
 
 exports.setNextSong = function (song) {

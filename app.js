@@ -1,7 +1,6 @@
 const TonePlayer = require('./TonePlayer.js');
 const SimilarSongsRandomizer = require('./similarSongsRandomizer.js')
 const View = require('./view.js');
-const { connectSeries } = require('tone');
 
 const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
@@ -25,7 +24,6 @@ function updateView(song, subMeasure) {
 
 //Initialization
 currentSong = SimilarSongsRandomizer.getFirstRandomSong();
-console.log(currentSong)
 //TODO -> CAP SU TUTTE LE NEXT SONG
 let measures = currentSong.music.measures
 measures = capChords(measures, currentSong.music.timeSignature)

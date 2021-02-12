@@ -1,13 +1,16 @@
-let songs = require('./test.json');
+let songsByKey = require('./songsByKey.json');
+
+const altKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 exports.getFirstRandomSong = function() {
-    var firstSong = songs[Math.floor(Math.random() * songs.length)];
-    //console.log(firstSong.title)
-    //TEST 
-    //17 -> ruby my dear
-    firstSong = songs[0]
-        //allBlues[0][1] = 'C7'
-        //firstSong.music.measures = allBlues
+    let randKey 
+    let randSong
+    do {
+        randKey = Math.floor(Math.random() * altKeys.length)
+        randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
+        firstSong = songsByKey[altKeys[randKey]][randSong]
+    } while (firstSong == undefined)
+
     return firstSong
 }
 
