@@ -29,7 +29,7 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     text-align: center;
-
+    
     width: 100%;
     height: 70%;
     background-color: lightyellow;
@@ -40,6 +40,16 @@
     width: 100%;
     height: 30%;
     background-color: lightseagreen;
+}
+
+#connectChords {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    text-align: center;
+
+    width: 100%;
+    height: 90%;
 }
 
 .sidebarColumn {

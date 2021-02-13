@@ -17,46 +17,70 @@ let partiture
 let part
 
 let nextSong = {}
+let partitureNextSong
+let partNextSong
 
 let connectSong = {}
 let partitureConnect
 let partConnect
+let harmonicOn = false
 
 //Lo stato può essere play, stop, pause 
 let state = "stop"
 let currentMeasure = 0
+let connectChordsIndex
 let loop = true
 
 
-exports.setCurrentSong = function(song) {
+exports.setCurrentSong = function (song) {
     Object.assign(currentSong, song)
     let tempPart = generatePartiture(currentSong.music.measures)
     partiture = tempPart[0]
     part = tempPart[1]
-    console.log(partiture, part)
 }
 
-exports.setNextSong = function(song) {
+exports.setNextSongCurrent = function (song) {
+    Object.assign(currentSong, song)
+    nextSong = {}
+    connectSong = {}
+}
+
+
+exports.setNextSong = function (song) {
     Object.assign(nextSong, song)
+    let tempPart = generatePartiture(nextSong.music.measures)
+    partitureNextSong = tempPart[0]
+    partNextSong = tempPart[1]
     //Generazione accordi harmonic connect
     let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
-    let tempPart = generatePartiture(dummyConnect)
+
+    tempPart = generatePartiture(dummyConnect)
     partitureConnect = tempPart[0]
     partConnect = tempPart[1]
     partConnect.loop = false
+
+    Controller.setConnectChords(dummyConnect)
 }
 
-exports.setConnectSong = function(song) {
+exports.setConnectSong = function (song) {
     Object.assign(connectSong, song)
 }
 
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function() {
+sliderBpm.onchange = function () {
     currentSong.bpm = sliderBpm.value
     Tone.Transport.bpm.value = currentSong.bpm
 
     for (let i = 0; i < partiture.length; i++) {
         partiture[i].duration = Tone.Time({ "4n": partiture[i].subdiv }).valueOf()
+    }
+    if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+        for (let i = 0; i < partitureConnect.length; i++) {
+            partitureConnect[i].duration = Tone.Time({ "4n": partitureConnect[i].subdiv }).valueOf()
+        }
+        for (let i = 0; i < partitureNextSong.length; i++) {
+            partitureNextSong[i].duration = Tone.Time({ "4n": partitureNextSong[i].subdiv }).valueOf()
+        }
     }
 }
 
@@ -87,7 +111,7 @@ function generatePartiture(chords) {
         //CREAZIONE PARTITURA
         let count = 0
         for (let j = 0; j < chords[i].length; j++) {
-            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [], lastChord: false }
+            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [], lastChord: false, firstChord: false }
             temp.measure = i
             if (j > 0)
                 count = count + duration[j - 1]
@@ -99,12 +123,13 @@ function generatePartiture(chords) {
         }
     }
 
-    //SETTING LAST CHORD
+    //SETTING LAST CHORD AND FIRST CHORD
     let sum = 0
     for (let i = 0; i < chords.length; i++) {
         sum = sum + chords[i].length
     }
-    partitureTemp[sum-1].lastChord = true
+    partitureTemp[sum - 1].lastChord = true
+    partitureTemp[0].firstChord = true
 
     let partTemp = new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
@@ -113,17 +138,45 @@ function generatePartiture(chords) {
         if (currentMeasure != chord.measure) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
-        }
-        if(chord.lastChord) {
-            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
-                console.log("OK")
-                Tone.Transport.stop()
-                Tone.Transport.clear()
+        if (harmonicOn) {
+            if (connectChordsIndex != chord.measure) {
+                connectChordsIndex = chord.measure
+                Controller.setCurrentMeasureConnect(currentMeasure)
             }
-
         }
-            
+        }
+        if (chord.lastChord) {
+            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+                if (!harmonicOn) {
+                    //Play harmonic Connect chords
+                    harmonicOn = true
+                    Tone.Transport.stop()
+                    Tone.Transport.cancel(0)
 
+                    part = generatePart(partitureConnect, timeSignature)
+                    part.start(chord.duration)
+                    Tone.Transport.start()
+
+                } else {
+                    //Delete currente harmonic connect
+                    harmonicOn = false
+                    Controller.setConnectChords([])
+
+
+                    Controller.triggerNextSong()
+                    //Play next song
+                    Tone.Transport.stop()
+                    Tone.Transport.cancel(0)
+
+                    partiture = partitureNextSong
+                    part = generatePart(partiture, extractTimeSignature(currentSong.music.timeSignature))
+                    part.loop = true
+                    part.start(chord.duration)
+                    Tone.Transport.start()
+
+                }
+            }
+        }
     }), partitureTemp);
     partTemp.humanize = true
     partTemp.loop = true
@@ -133,14 +186,72 @@ function generatePartiture(chords) {
     return [partitureTemp, partTemp]
 }
 
+function generatePart(targetPartiture, timeSignature) {
+    let partTemp = new Tone.Part(((time, chord) => {
+        // the notes given as the second element in the array
+        // will be passed in as the second argument
+        sampler.triggerAttackRelease(chord.notes, chord.duration, time);
+        if (currentMeasure != chord.measure) {
+            currentMeasure = chord.measure
+            Controller.setCurrentMeasure(currentMeasure)
+        }
+        if (chord.lastChord) {
+            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+                if (!harmonicOn) {
+                    //Play harmonic Connect chords
+                    harmonicOn = true
+                    Tone.Transport.stop()
+                    Tone.Transport.cancel(0)
+                    partConnect.start(chord.duration)
+                    Tone.Transport.start()
+                    if (connectChordsIndex != chord.measure) {
+                        currentMeasure = chord.measure
+                        Controller.setCurrentMeasure(currentMeasure)
+                    }
+                } else {
+                    //Delete currente harmonic connect
+                    harmonicOn = false
+                    Controller.setConnectChords([])
+
+
+                    Controller.triggerNextSong()
+                    //Play next song
+                    Tone.Transport.stop()
+                    Tone.Transport.cancel(0)
+
+                    partiture = partitureNextSong
+                    part = partNextSong
+                    part.loop = true
+                    part.start(chord.duration)
+                    Tone.Transport.start()
+
+                }
+            }
+        }
+    }), targetPartiture);
+    partTemp.humanize = true
+    partTemp.loop = true
+    partTemp.loopStart = targetPartiture[0].time
+    partTemp.loopEnd = (targetPartiture[targetPartiture.length - 1].measure + ":" + timeSignature)
+    
+    return partTemp;
+}
+
 function play() {
     Tone.start()
     part.start()
+    /* if (harmonicOn)
+        partConnect.start(Tone.Transport.ticks)
+    else
+        part.start(Tone.Transport.ticks) */
     Tone.Transport.start()
 }
 
 function stop() {
     Tone.Transport.stop()
+    Tone.Transport.cancel(0)
+    part = generatePart(partiture, extractTimeSignature(currentSong.music.timeSignature))
+    part.start()
     Controller.setCurrentMeasure(0)
 }
 
@@ -148,10 +259,8 @@ function pause() {
     Tone.Transport.pause()
 }
 
-// Chiamare la next song solo in play?
 
-
-exports.setState = function(appState) {
+exports.setState = function (appState) {
     state = appState
     switch (state) {
         case "play":
@@ -166,51 +275,6 @@ exports.setState = function(appState) {
         default:
             break;
     }
-}
-
-// Non credo ci sia piu il bisogno...
-/*exports.setNextAndConnect = function (nSong, cSong) {
-    nextSong = nSong
-    connectSong = cSong
-    loop = false
- 
-}*/
-
-// Scheletro
-exports.loopCurrentSong = function(loop, song) {
-    currentSong = song
-    currentMeasure = song.music.measure;
-    if (loop == true) {
-        if (currentMeasure == song.music.measures.length) {
-            currentMeasure = 0
-        }
-    }
-    return loop;
-}
-
-exports.loopMeasures = function(time, chord, nLoops, nMeasures) {
-    var loopChords = new Tone.Event(function(time, chord, nLoops, nMeasures) {
-        //the chord as well as the exact time of the event
-        //are passed in as arguments to the callback function
-    }, chord);
-    //start the chord at the beginning of the transport timeline
-    loopChords.start();
-    //loop it every measure for 8 measures
-    loopChords.loop = nLoops; // int
-    loopChords.loopEnd = nMeasures; // "1m" one measure
-}
-
-exports.changeSong = function (song_1, song_2) {
-    for (let index = 0; index < song_1.music.measures.length; index++) {
-        if (index == song_1.music.measures.length) {
-            song_2.bpm = song_1.bpm
-            song_1 = song_2;
-        }
-    }
-}
-
-exports.chooseNextSong = function (song) {
-
 }
 
 
@@ -322,17 +386,65 @@ const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "
 let currentSong
 let nextSong
 let currentMeasure = 0
+let connectChords
+let connectChordsIndex = 0
 
-exports.setCurrentMeasure = function(measureNum) {
+exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
     scrollSubView()
-        //Change nella view la misura illuminata
+    //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
+}
+
+exports.setCurrentMeasureConnect = function (measureNum) {
+    //Refers to the current played measure by TonePlayer
+    connectChordsIndex = measureNum;
+    //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
+}
+
+exports.triggerNextSong = function () {
+    currentSong = nextSong
+    measures = currentSong.music.measures
+    measures = capChords(measures, currentSong.music.timeSignature)
+    TonePlayer.setNextSongCurrent(currentSong)
+    setKeyDropdown()
+
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.pop()
+    }
+
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.push(measures[i])
+    }
+    updateView(currentSong, viewedBlock)
+}
+
+
+const chordPanelConnect = document.getElementById("connectChords")
+
+exports.setConnectChords = function (cChords) {
+    connectChords = cChords
+
+    //Remove previous children
+    while (chordPanelConnect.firstChild) {
+        chordPanelConnect.removeChild(chordPanelConnect.lastChild);
+    }
+
+    //Grid generation harmonic conenct
+    for (let i = 0; i < connectChords.length; i++) {
+        let div = document.createElement("div");
+        div.id = "cellHarmonic" + i
+        div.classList.add("cell")
+        chordPanelConnect.appendChild(div)
+    }
+
     updateView(currentSong, viewedBlock)
 }
 
 function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, viewIndex)
+    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex)
 }
 
 
@@ -348,13 +460,24 @@ setKeyDropdown()
 let playBtn = document.getElementById("play")
 let stopBtn = document.getElementById("stop")
 let pauseBtn = document.getElementById("pause")
-playBtn.onclick = function() {
+playBtn.onclick = function () {
     TonePlayer.setState("play")
 }
-stopBtn.onclick = function() {
+stopBtn.onclick = function () {
     TonePlayer.setState("stop")
+    
+    //RESET CHORD VIEW
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.pop()
+    }
+
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.push(measures[i])
+    }
+    updateView(currentSong, viewedBlock)
+    
 }
-pauseBtn.onclick = function() {
+pauseBtn.onclick = function () {
     TonePlayer.setState("pause")
 }
 
@@ -417,7 +540,7 @@ function scrollSubView() {
 
 function circularMotion(num, addSocNum, mod) {
     let ris
-        //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
+    //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
     if (addSocNum >= 0) {
         ris = num + addSocNum
         ris = ris % mod
@@ -448,7 +571,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function() {
+document.getElementById("onClickSubmit").onclick = function () {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
@@ -851,10 +974,12 @@ let bpm
 let timeSignature
 let chords = []
 let currentMeasure
-let connectChords
+let connectChords = []
+let connectChordsIndex
 
 //Dom elements
 const chordPanel = document.getElementById("chords")
+const chordPanelConnect = document.getElementById("connectChords")
 const titleDiv = document.getElementById("songTitle")
 const composerDiv = document.getElementById("composer")
 const styleAndKeyDiv = document.getElementById("styleAndKey")
@@ -866,7 +991,8 @@ for (let i = 0; i < 24; i++) {
     chordPanel.appendChild(div)
 }
 
-exports.changeState = function (song, subMeasure, currentMeas) {
+
+exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex) {
     title = song.title
     composer = song.composer
     style = song.style
@@ -874,6 +1000,8 @@ exports.changeState = function (song, subMeasure, currentMeas) {
     bpm = song.bpm
     timeSignature = song.music.timeSignature
     currentMeasure = currentMeas
+    connectChords = harmonicConnectChords
+    connectChordsIndex = harmonicConnectIndex
     //Copy all measures
     for (let i = 0; i < 24; i++)
         chords.pop()
@@ -894,6 +1022,15 @@ function render() {
             chordPanel.children[i].classList.add("selectedCell")
         else 
             chordPanel.children[i].classList.remove("selectedCell")
+    }
+
+    //Render harmonic connect
+    for (let i = 0; i < chordPanelConnect.children.length; i++) {
+        chordPanelConnect.children[i].textContent = connectChords[i]
+        if (i == connectChordsIndex)
+            chordPanelConnect.children[i].classList.add("selectedCell")
+        else 
+            chordPanelConnect.children[i].classList.remove("selectedCell")
     }
 
     //Render sidebar panel
