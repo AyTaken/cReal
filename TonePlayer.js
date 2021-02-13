@@ -15,9 +15,9 @@ let currentSong = {};
 let partiture
 let part
 
-let nextSong = null
+let nextSong = {}
 
-let connectSong = null
+let connectSong = {}
 let partitureConnect
 let partConnect
 
@@ -37,7 +37,7 @@ exports.setCurrentSong = function(song) {
 
 exports.setNextSong = function(song) {
     Object.assign(nextSong, song)
-    //Generazione accordi armonic connect
+    //Generazione accordi harmonic connect
     let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
     let tempPart = generatePartiture(dummyConnect)
     partitureConnect = tempPart[0]
@@ -48,12 +48,6 @@ exports.setNextSong = function(song) {
 exports.setConnectSong = function(song) {
     Object.assign(connectSong, song)
 }
-
-
-//DA SISTEMARe
-/*console.log(currentSong)
-console.log(nextSong)
-console.log(connectSong)*/
 
 let sliderBpm = document.getElementById("sliderTempo")
 sliderBpm.onchange = function() {
@@ -120,8 +114,8 @@ function generatePartiture(chords) {
             Controller.setCurrentMeasure(currentMeasure)
         }
         if(chord.lastChord) {
-            console.log(nextSong)
-            if (nextSong != undefined) {
+            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+                console.log("OK")
                 Tone.Transport.stop()
                 Tone.Transport.clear()
             }

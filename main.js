@@ -16,9 +16,9 @@ let currentSong = {};
 let partiture
 let part
 
-let nextSong = null
+let nextSong = {}
 
-let connectSong = null
+let connectSong = {}
 let partitureConnect
 let partConnect
 
@@ -28,7 +28,7 @@ let currentMeasure = 0
 let loop = true
 
 
-exports.setCurrentSong = function (song) {
+exports.setCurrentSong = function(song) {
     Object.assign(currentSong, song)
     let tempPart = generatePartiture(currentSong.music.measures)
     partiture = tempPart[0]
@@ -36,9 +36,9 @@ exports.setCurrentSong = function (song) {
     console.log(partiture, part)
 }
 
-exports.setNextSong = function (song) {
+exports.setNextSong = function(song) {
     Object.assign(nextSong, song)
-    //Generazione accordi armonic connect
+    //Generazione accordi harmonic connect
     let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
     let tempPart = generatePartiture(dummyConnect)
     partitureConnect = tempPart[0]
@@ -46,18 +46,12 @@ exports.setNextSong = function (song) {
     partConnect.loop = false
 }
 
-exports.setConnectSong = function (song) {
+exports.setConnectSong = function(song) {
     Object.assign(connectSong, song)
 }
 
-
-//DA SISTEMARe
-/*console.log(currentSong)
-console.log(nextSong)
-console.log(connectSong)*/
-
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function () {
+sliderBpm.onchange = function() {
     currentSong.bpm = sliderBpm.value
     Tone.Transport.bpm.value = currentSong.bpm
 
@@ -121,8 +115,8 @@ function generatePartiture(chords) {
             Controller.setCurrentMeasure(currentMeasure)
         }
         if(chord.lastChord) {
-            console.log(nextSong)
-            if (nextSong != undefined) {
+            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+                console.log("OK")
                 Tone.Transport.stop()
                 Tone.Transport.clear()
             }
@@ -157,7 +151,7 @@ function pause() {
 // Chiamare la next song solo in play?
 
 
-exports.setState = function (appState) {
+exports.setState = function(appState) {
     state = appState
     switch (state) {
         case "play":
@@ -183,7 +177,7 @@ exports.setState = function (appState) {
 }*/
 
 // Scheletro
-exports.loopCurrentSong = function (loop, song) {
+exports.loopCurrentSong = function(loop, song) {
     currentSong = song
     currentMeasure = song.music.measure;
     if (loop == true) {
@@ -194,8 +188,8 @@ exports.loopCurrentSong = function (loop, song) {
     return loop;
 }
 
-exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
-    var loopChords = new Tone.Event(function (time, chord, nLoops, nMeasures) {
+exports.loopMeasures = function(time, chord, nLoops, nMeasures) {
+    var loopChords = new Tone.Event(function(time, chord, nLoops, nMeasures) {
         //the chord as well as the exact time of the event
         //are passed in as arguments to the callback function
     }, chord);
@@ -371,7 +365,7 @@ let targetKeyBtn = document.getElementById("targetKey")
 let randomKeyBtn = document.getElementById("randomKey")
 sameKeyBtn.onclick = function () {
     //DUMMY
-    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
     setNextSong()
 }
 similarKeyBtn.onclick = function () {
@@ -396,12 +390,6 @@ function setNextSong() {
     TonePlayer.setNextSong(nextSong)
 }
 
-
-
-let sameBtn = document.getElementById("sameKey")
-sameBtn.onclick = function() {
-    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
-}
 
 //GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
@@ -760,17 +748,17 @@ exports.getFirstRandomSong = function() {
     let randSong
     do {
         randKey = Math.floor(Math.random() * altKeys.length)
-        console.log("ok, randkey = " + randKey)
+            //console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
         console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
-        console.log("ok, firstSong = " + firstSong)
-        console.log("ok, title = " + firstSong.title)
+            //console.log("ok, firstSong = " + firstSong)
+            //console.log("ok, title = " + firstSong.title)
 
 
     } while (firstSong == undefined)
 
-    //firstSong = songsByKey['F'][1]
+    firstSong = songsByKey['C'][1]
     //console.log(firstSong)
 
     return firstSong
@@ -778,18 +766,18 @@ exports.getFirstRandomSong = function() {
 
 exports.getSameKeySong = function(songByKey) {
     let key = songByKey.key
-    console.log("ok, key = " + key)
+        //console.log("ok, key = " + key)
     let keyIndex = altKeys.indexOf(key)
-    console.log("ok, keyIndex = " + keyIndex)
+        //console.log("ok, keyIndex = " + keyIndex)
     let nextSong
         //var nextSong = songs[Math.floor(Math.random() * songs.length)];
 
     randInKeySong = Math.floor(Math.random() * songsByKey[altKeys[keyIndex]].length)
-    console.log("ok, RandInKeySong = " + randInKeySong)
+        //console.log("ok, RandInKeySong = " + randInKeySong)
     nextSong = songsByKey[altKeys[keyIndex]][randInKeySong]
-    console.log("ok, nextSong = " + nextSong)
-    console.log("ok nextKey = " + nextSong.key)
-    console.log("ok, title = " + nextSong.title)
+        //console.log("ok, nextSong = " + nextSong)
+        //console.log("ok nextKey = " + nextSong.key)
+        //console.log("ok, title = " + nextSong.title)
         // it repeats the operation untill it gets the same key
         //while (nextSong.key != song.key)
         //nextSong = songs[Math.floor(Math.random() * songs.length)];
@@ -797,9 +785,9 @@ exports.getSameKeySong = function(songByKey) {
 }
 
 // Arrays of Keys
-const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
     // The minor key has a different order in respect to the major ones for an easier implementation
-const minorKeys = ['A-', 'A#-', 'B-', 'C-', 'C#-', 'D-', 'D#-', 'E-', 'F-', 'F#-', 'G-', 'G#-'];
+const minorKeys = ['A-', 'Bb-', 'B-', 'C-', 'C#-', 'D-', 'Eb-', 'E-', 'F-', 'F#-', 'G-', 'G#-'];
 
 // with similar Key I intended: same key, correspondend major-minor, its IV or V.
 exports.getSimilarKeySong = function(song) {

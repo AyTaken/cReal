@@ -51,7 +51,7 @@ let targetKeyBtn = document.getElementById("targetKey")
 let randomKeyBtn = document.getElementById("randomKey")
 sameKeyBtn.onclick = function () {
     //DUMMY
-    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
     setNextSong()
 }
 similarKeyBtn.onclick = function () {
@@ -76,12 +76,6 @@ function setNextSong() {
     TonePlayer.setNextSong(nextSong)
 }
 
-
-
-let sameBtn = document.getElementById("sameKey")
-sameBtn.onclick = function() {
-    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
-}
 
 //GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
