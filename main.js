@@ -329,11 +329,11 @@ let currentSong
 let nextSong
 let currentMeasure = 0
 
-exports.setCurrentMeasure = function (measureNum) {
+exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
     scrollSubView()
-    //Change nella view la misura illuminata
+        //Change nella view la misura illuminata
     updateView(currentSong, viewedBlock)
 }
 
@@ -354,13 +354,13 @@ setKeyDropdown()
 let playBtn = document.getElementById("play")
 let stopBtn = document.getElementById("stop")
 let pauseBtn = document.getElementById("pause")
-playBtn.onclick = function () {
+playBtn.onclick = function() {
     TonePlayer.setState("play")
 }
-stopBtn.onclick = function () {
+stopBtn.onclick = function() {
     TonePlayer.setState("stop")
 }
-pauseBtn.onclick = function () {
+pauseBtn.onclick = function() {
     TonePlayer.setState("pause")
 }
 
@@ -398,6 +398,11 @@ function setNextSong() {
 
 
 
+let sameBtn = document.getElementById("sameKey")
+sameBtn.onclick = function() {
+    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
+}
+
 //GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
 let viewedBlock = []
@@ -424,7 +429,7 @@ function scrollSubView() {
 
 function circularMotion(num, addSocNum, mod) {
     let ris
-    //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
+        //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
     if (addSocNum >= 0) {
         ris = num + addSocNum
         ris = ris % mod
@@ -455,7 +460,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function () {
+document.getElementById("onClickSubmit").onclick = function() {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
@@ -751,27 +756,43 @@ let songsByKey = require('./songsByKey.json');
 const altKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 exports.getFirstRandomSong = function() {
-    let randKey 
+    let randKey
     let randSong
     do {
         randKey = Math.floor(Math.random() * altKeys.length)
+        console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
+        console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
+        console.log("ok, firstSong = " + firstSong)
+        console.log("ok, title = " + firstSong.title)
+
+
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
+    //firstSong = songsByKey['F'][1]
     //console.log(firstSong)
 
     return firstSong
 }
 
-exports.getSameKeySong = function(song) {
+exports.getSameKeySong = function(songByKey) {
+    let key = songByKey.key
+    console.log("ok, key = " + key)
+    let keyIndex = altKeys.indexOf(key)
+    console.log("ok, keyIndex = " + keyIndex)
+    let nextSong
+        //var nextSong = songs[Math.floor(Math.random() * songs.length)];
 
-    var nextSong = songs[Math.floor(Math.random() * songs.length)];
-    // it repeats the operation untill it gets the same key
-    while (nextSong.key != song.key)
-        nextSong = songs[Math.floor(Math.random() * songs.length)];
-
+    randInKeySong = Math.floor(Math.random() * songsByKey[altKeys[keyIndex]].length)
+    console.log("ok, RandInKeySong = " + randInKeySong)
+    nextSong = songsByKey[altKeys[keyIndex]][randInKeySong]
+    console.log("ok, nextSong = " + nextSong)
+    console.log("ok nextKey = " + nextSong.key)
+    console.log("ok, title = " + nextSong.title)
+        // it repeats the operation untill it gets the same key
+        //while (nextSong.key != song.key)
+        //nextSong = songs[Math.floor(Math.random() * songs.length)];
     return nextSong
 }
 

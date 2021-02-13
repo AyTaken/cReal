@@ -9,11 +9,11 @@ let currentSong
 let nextSong
 let currentMeasure = 0
 
-exports.setCurrentMeasure = function (measureNum) {
+exports.setCurrentMeasure = function(measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
     scrollSubView()
-    //Change nella view la misura illuminata
+        //Change nella view la misura illuminata
     updateView(currentSong, viewedBlock)
 }
 
@@ -34,13 +34,13 @@ setKeyDropdown()
 let playBtn = document.getElementById("play")
 let stopBtn = document.getElementById("stop")
 let pauseBtn = document.getElementById("pause")
-playBtn.onclick = function () {
+playBtn.onclick = function() {
     TonePlayer.setState("play")
 }
-stopBtn.onclick = function () {
+stopBtn.onclick = function() {
     TonePlayer.setState("stop")
 }
-pauseBtn.onclick = function () {
+pauseBtn.onclick = function() {
     TonePlayer.setState("pause")
 }
 
@@ -78,6 +78,11 @@ function setNextSong() {
 
 
 
+let sameBtn = document.getElementById("sameKey")
+sameBtn.onclick = function() {
+    nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
+}
+
 //GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
 let viewedBlock = []
@@ -104,7 +109,7 @@ function scrollSubView() {
 
 function circularMotion(num, addSocNum, mod) {
     let ris
-    //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
+        //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
     if (addSocNum >= 0) {
         ris = num + addSocNum
         ris = ris % mod
@@ -135,7 +140,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function () {
+document.getElementById("onClickSubmit").onclick = function() {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {

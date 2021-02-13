@@ -3,34 +3,50 @@ let songsByKey = require('./songsByKey.json');
 const altKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 exports.getFirstRandomSong = function() {
-    let randKey 
+    let randKey
     let randSong
     do {
         randKey = Math.floor(Math.random() * altKeys.length)
+            //console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
+        console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
+            //console.log("ok, firstSong = " + firstSong)
+            //console.log("ok, title = " + firstSong.title)
+
+
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
+    //firstSong = songsByKey['F'][1]
     //console.log(firstSong)
 
     return firstSong
 }
 
-exports.getSameKeySong = function(song) {
+exports.getSameKeySong = function(songByKey) {
+    let key = songByKey.key
+        //console.log("ok, key = " + key)
+    let keyIndex = altKeys.indexOf(key)
+        //console.log("ok, keyIndex = " + keyIndex)
+    let nextSong
+        //var nextSong = songs[Math.floor(Math.random() * songs.length)];
 
-    var nextSong = songs[Math.floor(Math.random() * songs.length)];
-    // it repeats the operation untill it gets the same key
-    while (nextSong.key != song.key)
-        nextSong = songs[Math.floor(Math.random() * songs.length)];
-
+    randInKeySong = Math.floor(Math.random() * songsByKey[altKeys[keyIndex]].length)
+        //console.log("ok, RandInKeySong = " + randInKeySong)
+    nextSong = songsByKey[altKeys[keyIndex]][randInKeySong]
+        //console.log("ok, nextSong = " + nextSong)
+        //console.log("ok nextKey = " + nextSong.key)
+        //console.log("ok, title = " + nextSong.title)
+        // it repeats the operation untill it gets the same key
+        //while (nextSong.key != song.key)
+        //nextSong = songs[Math.floor(Math.random() * songs.length)];
     return nextSong
 }
 
 // Arrays of Keys
-const keys = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
     // The minor key has a different order in respect to the major ones for an easier implementation
-const minorKeys = ['A-', 'A#-', 'B-', 'C-', 'C#-', 'D-', 'D#-', 'E-', 'F-', 'F#-', 'G-', 'G#-'];
+const minorKeys = ['A-', 'Bb-', 'B-', 'C-', 'C#-', 'D-', 'Eb-', 'E-', 'F-', 'F#-', 'G-', 'G#-'];
 
 // with similar Key I intended: same key, correspondend major-minor, its IV or V.
 exports.getSimilarKeySong = function(song) {

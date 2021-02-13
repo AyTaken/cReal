@@ -27,7 +27,7 @@ let currentMeasure = 0
 let loop = true
 
 
-exports.setCurrentSong = function (song) {
+exports.setCurrentSong = function(song) {
     Object.assign(currentSong, song)
     let tempPart = generatePartiture(currentSong.music.measures)
     partiture = tempPart[0]
@@ -35,7 +35,7 @@ exports.setCurrentSong = function (song) {
     console.log(partiture, part)
 }
 
-exports.setNextSong = function (song) {
+exports.setNextSong = function(song) {
     Object.assign(nextSong, song)
     //Generazione accordi armonic connect
     let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
@@ -45,7 +45,7 @@ exports.setNextSong = function (song) {
     partConnect.loop = false
 }
 
-exports.setConnectSong = function (song) {
+exports.setConnectSong = function(song) {
     Object.assign(connectSong, song)
 }
 
@@ -56,7 +56,7 @@ console.log(nextSong)
 console.log(connectSong)*/
 
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function () {
+sliderBpm.onchange = function() {
     currentSong.bpm = sliderBpm.value
     Tone.Transport.bpm.value = currentSong.bpm
 
@@ -156,7 +156,7 @@ function pause() {
 // Chiamare la next song solo in play?
 
 
-exports.setState = function (appState) {
+exports.setState = function(appState) {
     state = appState
     switch (state) {
         case "play":
@@ -182,7 +182,7 @@ exports.setState = function (appState) {
 }*/
 
 // Scheletro
-exports.loopCurrentSong = function (loop, song) {
+exports.loopCurrentSong = function(loop, song) {
     currentSong = song
     currentMeasure = song.music.measure;
     if (loop == true) {
@@ -193,8 +193,8 @@ exports.loopCurrentSong = function (loop, song) {
     return loop;
 }
 
-exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
-    var loopChords = new Tone.Event(function (time, chord, nLoops, nMeasures) {
+exports.loopMeasures = function(time, chord, nLoops, nMeasures) {
+    var loopChords = new Tone.Event(function(time, chord, nLoops, nMeasures) {
         //the chord as well as the exact time of the event
         //are passed in as arguments to the callback function
     }, chord);
