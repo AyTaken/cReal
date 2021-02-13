@@ -48,29 +48,32 @@ pauseBtn.onclick = function() {
 let sameKeyBtn = document.getElementById("sameKey")
 let similarKeyBtn = document.getElementById("similarKey")
 let targetKeyBtn = document.getElementById("targetKey")
+let targetKey = document.getElementById("keys").value
 let randomKeyBtn = document.getElementById("randomKey")
-sameKeyBtn.onclick = function () {
+sameKeyBtn.onclick = function() {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
     setNextSong()
 }
-similarKeyBtn.onclick = function () {
+similarKeyBtn.onclick = function() {
     //DUMMY
-    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    nextSong = SimilarSongsRandomizer.getSimilarKeySong(currentSong)
     setNextSong()
 }
-targetKeyBtn.onclick = function () {
+targetKeyBtn.onclick = function() {
     //DUMMY
-    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    let targetKey = document.getElementById("keys").value
+    nextSong = SimilarSongsRandomizer.getTargetKeySong(targetKey)
     setNextSong()
 }
-randomKeyBtn.onclick = function () {
+randomKeyBtn.onclick = function() {
     //DUMMY
-    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    nextSong = SimilarSongsRandomizer.getRandomSong()
     setNextSong()
 }
 
 let nextSongVis = document.getElementById("nextSongVis")
+
 function setNextSong() {
     nextSongVis.textContent = nextSong.title + " in " + nextSong.key
     TonePlayer.setNextSong(nextSong)

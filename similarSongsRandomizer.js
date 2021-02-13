@@ -2,6 +2,12 @@ let songsByKey = require('./songsByKey.json');
 
 const altKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
+const longAltKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B",
+    "C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B",
+    "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-",
+    "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"
+]
+
 exports.getFirstRandomSong = function() {
     let randKey
     let randSong
@@ -9,7 +15,7 @@ exports.getFirstRandomSong = function() {
         randKey = Math.floor(Math.random() * altKeys.length)
             //console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
-        console.log("ok, randSong = " + randSong)
+            //console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
             //console.log("ok, firstSong = " + firstSong)
             //console.log("ok, title = " + firstSong.title)
@@ -24,22 +30,24 @@ exports.getFirstRandomSong = function() {
 }
 
 exports.getSameKeySong = function(songByKey) {
-    let key = songByKey.key
-        //console.log("ok, key = " + key)
-    let keyIndex = altKeys.indexOf(key)
-        //console.log("ok, keyIndex = " + keyIndex)
-    let nextSong
-        //var nextSong = songs[Math.floor(Math.random() * songs.length)];
+    let key
+    let keyIndex
+    do {
+        key = songByKey.key
+        console.log("ok, key = " + key)
+        keyIndex = altKeys.indexOf(key)
+        console.log("ok, keyIndex = " + keyIndex)
+        let nextSong
+            //var nextSong = songs[Math.floor(Math.random() * songs.length)];
 
-    randInKeySong = Math.floor(Math.random() * songsByKey[altKeys[keyIndex]].length)
-        //console.log("ok, RandInKeySong = " + randInKeySong)
-    nextSong = songsByKey[altKeys[keyIndex]][randInKeySong]
-        //console.log("ok, nextSong = " + nextSong)
-        //console.log("ok nextKey = " + nextSong.key)
-        //console.log("ok, title = " + nextSong.title)
-        // it repeats the operation untill it gets the same key
-        //while (nextSong.key != song.key)
-        //nextSong = songs[Math.floor(Math.random() * songs.length)];
+        randInKeySong = Math.floor(Math.random() * songsByKey[altKeys[keyIndex]].length)
+        console.log("ok, RandInKeySong = " + randInKeySong)
+        nextSong = songsByKey[altKeys[keyIndex]][randInKeySong]
+        console.log("ok, nextSong = " + nextSong)
+        console.log("ok nextKey = " + nextSong.key)
+        console.log("ok, title = " + nextSong.title)
+            // it repeats the operation untill it gets the same key
+    } while (nextSong == undefined)
     return nextSong
 }
 
@@ -49,52 +57,78 @@ const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
 const minorKeys = ['A-', 'Bb-', 'B-', 'C-', 'C#-', 'D-', 'Eb-', 'E-', 'F-', 'F#-', 'G-', 'G#-'];
 
 // with similar Key I intended: same key, correspondend major-minor, its IV or V.
-exports.getSimilarKeySong = function(song) {
+exports.getSimilarKeySong = function(songByKey) {
+    let key
+    let currentKeyIndex
+    do {
+        // I'm searching the correspondent key on the two arrays
+        // If its a majorkey, the minor index will result -1 and viceversa
+        key = songByKey.key
+        console.log("key = " + key)
+            // sto assumendo che l'indexOf sia un firstIndexOf
+        currentKeyIndex = longAltKeys.indexOf(key)
+        console.log("currentKeyIndex = " + currentKeyIndex)
+        let nextSong
+        randomCase = Math.ceil(Math.random() * 3)
+        console.log("randomCase = " + randomCase)
+        if (randomCase == 1) {
+            if (currentKeyIndex < 24) {
+                nextKeyIndex = currentKeyIndex + 24
+            } else { nextKeyIndex = currentKeyIndex - 24 }
+        } else if (randomCase == 2) {
+            nextKeyIndex = currentKeyIndex + 5
+        } else if (randomCase == 3) {
+            nextKeyIndex = currentKeyIndex + 7
+        }
+        console.log("nextKeyIndex = " + nextKeyIndex)
+        simKeySong = Math.floor(Math.random() * songsByKey[longAltKeys[nextKeyIndex]].length)
+        console.log("ok, SimKeySong = " + simKeySong)
+        nextSong = songsByKey[longAltKeys[nextKeyIndex]][simKeySong]
+        console.log("ok, nextSong = " + nextSong)
+        console.log("ok nextKey = " + nextSong.key)
+        console.log("ok, title = " + nextSong.title)
+    } while (nextSong == undefined)
 
-    var nextSong = songs[Math.floor(Math.random() * songs.length)];
-    // I'm searching the correspondent key on the two arrays
-    // If its a majorkey, the minor index will result -1 and viceversa
-    let keyIndex = keys.findIndex(nextSong.key)
-    let minorKeyIndex = minorKeys.findIndex(nextSong.key)
-        // If its a major ker
-    if (keyIndex != -1) {
-        // It will continue to repeat the operations in case the two keys are not same or correspondent minor
-        while (nextSong.key != song.key || nextSong.key != minorKeys[keyIndex]) {
-            // This else-if cascade is due to the fact that I didn't though of doing the two keys arrays
-            // two octaves long. That would simplify the implementation. Btw I'm searching for the IV and V by 
-            // making sure to not get further than the arrays length
-            // ***************** CORRECT THE ARRAYS AND SIMPLIFY THIS PART ************ reminder for myself
-            if (keyIndex <= 5 && keyIndex != -1) {
-                while (nextSong.key != keys[keyIndex + 5] || nextSong.key != keys[keyIndex + 7]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            } else if (keyIndex > 5 && keyIndex <= 7 && keyIndex != -1) {
-                while (nextSong.key != keys[keyIndex + 5] || nextSong.key != keys[keyIndex + -5]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            } else if (keyIndex > 7 && keyIndex != -1) {
-                while (nextSong.key != keys[keyIndex - 5] || nextSong.key != keys[keyIndex - 7]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            }
-        }
-        // same of major but for minor
-    } else {
-        while (nextSong.key != song.key || nextSong.key != keys[minorKeyIndex]) {
-            if (minorKeyIndex <= 5 && minorKeyIndex != -1) {
-                while (nextSong.key != minorKeys[minorKeyIndex + 5] || nextSong.key != minorKeys[minorKeyIndex + 7]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            } else if (minorKeyIndex > 5 && minorKeyIndex <= 7 && minorKeyIndex != -1) {
-                while (nextSong.key != minorKeys[minorKeyIndex + 5] || nextSong.key != minorKeys[minorKeyIndex + -5]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            } else if (minorKeyIndex > 7 && minorKeyIndex != -1) {
-                while (nextSong.key != minorKeys[minorKeyIndex - 5] || nextSong.key != minorKeys[minorKeyIndex - 7]) {
-                    nextSong = songs[Math.floor(Math.random() * songs.length)];
-                }
-            }
-        }
-    }
+    return nextSong
+}
+
+
+exports.getTargetKeySong = function(key) {
+    let targetKeyIndex
+
+    do {
+        let nextSong
+        targetKeyIndex = altKeys.indexOf(key)
+        console.log("targetKeyIndex = " + targetKeyIndex)
+        targetKeySong = Math.floor(Math.random() * songsByKey[altKeys[targetKeyIndex]].length)
+        console.log("targetKeySong = " + targetKeySong)
+        nextSong = songsByKey[altKeys[targetKeyIndex]][targetKeySong]
+        console.log("nextSong = " + nextSong)
+        console.log("ok nextKey = " + nextSong.key)
+        console.log("ok, title = " + nextSong.title)
+    } while (nextSong == undefined)
+    return nextSong
+}
+
+exports.getRandomSong = function() {
+    let randKey
+    let randSong
+    do {
+        let nextSong
+        randKey = Math.floor(Math.random() * altKeys.length)
+        console.log("ok, randkey = " + randKey)
+        randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
+        console.log("ok, randSong = " + randSong)
+        nextSong = songsByKey[altKeys[randKey]][randSong]
+        console.log("ok, nextSong = " + nextSong)
+        console.log("ok, title = " + nextSong.title)
+        console.log("ok, title = " + nextSong.key)
+
+
+    } while (nextSong == undefined)
+
+    //firstSong = songsByKey['F'][1]
+    //console.log(firstSong)
+
     return nextSong
 }
