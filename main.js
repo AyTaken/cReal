@@ -2,6 +2,7 @@
 const Tone = require('tone');
 const Controller = require('./app.js')
 const Chord = require('./chords.js');
+//const HarmonicConnect = require('./hConnect.js')
 
 //polysynth temporaneo
 const synth = new Tone.PolySynth().toDestination();
@@ -15,8 +16,12 @@ let currentSong = {};
 let partiture
 let part
 
-let nextSong = {};
-let connectSong = {};
+let nextSong = null
+
+let connectSong = null
+let partitureConnect
+let partConnect
+
 //Lo stato può essere play, stop, pause 
 let state = "stop"
 let currentMeasure = 0
@@ -25,11 +30,20 @@ let loop = true
 
 exports.setCurrentSong = function (song) {
     Object.assign(currentSong, song)
-    partiture = generatePartiture()
+    let tempPart = generatePartiture(currentSong.music.measures)
+    partiture = tempPart[0]
+    part = tempPart[1]
+    console.log(partiture, part)
 }
 
 exports.setNextSong = function (song) {
     Object.assign(nextSong, song)
+    //Generazione accordi armonic connect
+    let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
+    let tempPart = generatePartiture(dummyConnect)
+    partitureConnect = tempPart[0]
+    partConnect = tempPart[1]
+    partConnect.loop = false
 }
 
 exports.setConnectSong = function (song) {
@@ -52,73 +66,12 @@ sliderBpm.onchange = function () {
     }
 }
 
-/*function play() {
-    Tone.Transport.bpm.value = currentSong.bpm
-    Tone.Transport.start();
-    let chords = currentSong.music.measures
-
-    //Creazione temp per scheduling sequence
-    let temp = []
-    for (let i = 0; i < chords.length; i++) {
-        if (chords[i].length > 1) {
-            let temp2 = []
-            for (let j = 0; j < chords[i].length; j++) {
-                temp2.push(j)
-        }
-        temp.push(temp2)
-    
-        } else {
-            temp.push(0)
-        } 
-    }
-
-    //firstMeasure = currentSong.music.measures[measureNumber]
-    pausedMeasure = 0;
-    //paused = false;
-    const seq = new Tone.Sequence((time, index) => {
-        let duration = 4 / chords[index].length
-        let durString = duration + "n"
-        let temp2 = []
-        for (let i = 0; i < chords[index].length; i++) {
-            temp2.push(i)
-        }
-        const seq2 = new Tone.Sequence((time2, id2) => {
-            if (state == "play") {
-                if (pausedMeasure != 0)
-                    index = pausedMeasure
-                sampler.triggerAttackRelease(chords[index][id2], durString);
-                console.log(time, time2)
-                measureNumber = chords[index]
-                App.setCurrentMeasure(measureNumber)
-                // subdivisions are given as subarrays
-            } else if (state = "pause") {
-                paused = true
-                pausedMeasure = measureNumber
-                Tone.Transport.stop()
-            }
-            if (state = "stop") {
-                pausedMeasure = 0
-                measureNumber = 0
-                Tone.Transport.stop()
-            }
-            if (measureNumber == currentSong.music.measures.length) {
-                measureNumber = 0
-                if (loop == false) {
-                    if (connectSong)
-                        //playConnectSong() -- > "setCurrentMeasureConnect()"
-                        currentSong = nextSong
-                }
-            }
-        }, temp2, "4n").start(0)
-    }, temp, "1m").start(0);
-}*/
 
 //Funzione per generare l'oggetto da dare a ToneEvent.Part
-function generatePartiture() {
+function generatePartiture(chords) {
     Tone.Transport.bpm.value = sliderBpm.value
     let timeSignature = extractTimeSignature(currentSong.music.timeSignature)
     Tone.Transport.timeSignature = timeSignature
-    let chords = currentSong.music.measures
 
     let partitureTemp = []
 
@@ -140,7 +93,7 @@ function generatePartiture() {
         //CREAZIONE PARTITURA
         let count = 0
         for (let j = 0; j < chords[i].length; j++) {
-            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [] }
+            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [], lastChord: false }
             temp.measure = i
             if (j > 0)
                 count = count + duration[j - 1]
@@ -152,7 +105,14 @@ function generatePartiture() {
         }
     }
 
-    part = new Tone.Part(((time, chord) => {
+    //SETTING LAST CHORD
+    let sum = 0
+    for (let i = 0; i < chords.length; i++) {
+        sum = sum + chords[i].length
+    }
+    partitureTemp[sum-1].lastChord = true
+
+    let partTemp = new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
         // will be passed in as the second argument
         sampler.triggerAttackRelease(chord.notes, chord.duration, time);
@@ -160,13 +120,23 @@ function generatePartiture() {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
         }
-    }), partitureTemp);
-    part.humanize = true
-    part.loop = true
-    part.loopStart = partitureTemp[0].time
-    part.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)
+        if(chord.lastChord) {
+            console.log(nextSong)
+            if (nextSong != undefined) {
+                Tone.Transport.stop()
+                Tone.Transport.clear()
+            }
 
-    return partitureTemp
+        }
+            
+
+    }), partitureTemp);
+    partTemp.humanize = true
+    partTemp.loop = true
+    partTemp.loopStart = partitureTemp[0].time
+    partTemp.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)
+
+    return [partitureTemp, partTemp]
 }
 
 function play() {
@@ -236,10 +206,6 @@ exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
     loopChords.loopEnd = nMeasures; // "1m" one measure
 }
 
-/*exports.setNextSong = function (song) {
-    nextSong = song;
-}*/
-
 exports.changeSong = function (song_1, song_2) {
     for (let index = 0; index < song_1.music.measures.length; index++) {
         if (index == song_1.music.measures.length) {
@@ -249,106 +215,10 @@ exports.changeSong = function (song_1, song_2) {
     }
 }
 
-exports.bpmModulation = function (song) {
-    let bpmMod = new Tone.Transport()
-    Tone.Transport.bpm.value = song.bpm;
-    //ramp the bpm to the right one over 12 seconds
-    bpmMatch = songs.find(song.title).bpm;
-    Tone.Transport.bpm.rampTo(bpmMatch, 12);
-    // now I have to find a way to make follow the Tone.Transport bpm change to the original song.
-}
-
 exports.chooseNextSong = function (song) {
 
 }
 
-/*exports.setConnectSong = function (song, type) {
-    connectSong = song;
-}*/
-
-
-//DA ELIMINARE?
-/*function play(song) {
-    firstMeasure = song.music.measures[measureNumber]
-    pausedMeasure = 0;
-    paused = false;
-    for (i = 0; i < song.music.measures.length && paused == false && state != "stop"; i++) {
-        if (pausedMeasure != 0)
-            measureNumber = pausedMeasure
-        App.setCurrentMeasure(measureNumber)
-        measureNumber++
-        if (state = "pause") {
-            paused = true
-            pausedMeasure = measureNumber - 1
-        }
-        if (state = "stop") {
-            pausedMeasure = 0
-            measureNumber = 0
-        }
-        if (measureNumber == song.music.measures.length) {
-            measureNumber = 0
-            if (loop == false) {
-                if (connectSong)
-                    //playConnectSong() -- > "setCurrentMeasureConnect()"
-                    currentSong = nextSong
-            }
-        }
-    }
-}*/
-
-//var sampler = new Tone.Sampler({
-//"A": "./piano_notes/A.wav",
-//"A#": "./piano_notes/A#.wav",
-//"B": "./piano_notes/B.wav",
-//"C": "./piano_notes/C.wav",
-//"C#": "./piano_notes/C#.wav",
-//"D": "./piano_notes/D.wav",
-//"D#": "./piano_notes/D#.wav",
-//"E": "./piano_notes/E.wav",
-//"F": "./piano_notes/F.wav",
-// "F#": "./piano_notes/F#.wav",
-// "G": "./piano_notes/G.wav",
-//"G#": "./piano_notes/G#.wav",
-
-//}, function() {
-//sampler will repitch the closest sample
-//sampler.triggerAttack("A")
-//})
-
-//create a synth and connect it to the main output (your speakers)
-//const synth = new Tone.PolySynth().toDestination();
-
-// passing an array of instrument names will load all the instruments listed returning a new object, 
-// each property a tone.js object
-////var instruments = SampleLibrary.load({
-//instruments: ["piano", "harmonium", "violin"]
-//});
-
-// waits for instrument sound files to load from /samples/
-//Tone.Buffer.on('load', function() {
-// play instrument sound
-//  instruments['piano'].toMaster();
-//instruments['piano'].triggerAttack("A3");
-//});
-
-const sampler_2 = new Tone.Sampler({
-    urls: {
-        "A2": "./piano_notes/A.wav",
-        //"A#2": "./piano_notes/A#.wav",
-        //"B2": "./piano_notes/B.wav",
-        //"C3": "./piano_notes/C.wav",
-        //"C#3": "./piano_notes/C#.wav",
-        //"D4": "./piano_notes/D.wav",
-        //"D#3": "./piano_notes/D#.wav",
-        //"E3": "./piano_notes/E.wav",
-        //"F4": "./piano_notes/F.wav",
-        //"F#3": "./piano_notes/F#.wav",
-        //"G3": "./piano_notes/G.wav",
-        //"G#3": "./piano_notes/G#.wav",
-    },
-    release: 1,
-    //baseUrl: "https://tonejs.github.io/audio/salamander/",
-}).toDestination();
 
 const sampler = new Tone.Sampler({
     'A0': './piano/A0.mp3',
@@ -440,36 +310,6 @@ const sampler = new Tone.Sampler({
 }).toDestination();
 sampler.volume.value = -12
 
-//Tone.loaded().then(() => {
-//sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
-//  sampler.triggerAttackRelease(["Eb4", "G4", "Bb4"], 4);
-//})
-
-
-//play a middle 'C' for the duration of an 8th note
-Tone.start()
-
-/*const resumeBtn = document.getElementById("resumeButton");
-resumeBtn.onclick = function () {
- 
-    Tone.loaded().then(() => {
-        sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
- 
-    })
-    // synth.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n")
-    //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
-}
- 
-document.querySelector("tone-slider").addEventListener("input", (e) => Tone.Transport.bpm.value = parseFloat(e.target.value));
-//document.querySelector("tone-step-sequencer").addEventListener("trigger", ({ detail }) => {
-//keys.player(detail.row).start(detail.time, 0, "16t");
-//});
- 
-Tone.Transport.scheduleRepeat((time) => {
-    // use the callback time to schedule events
-    osc.start(time).stop(time + 0.1);
-}, "8n");*/
-
 
 function extractTimeSignature(ts) {
     let ris = ts[0]
@@ -523,6 +363,39 @@ stopBtn.onclick = function () {
 pauseBtn.onclick = function () {
     TonePlayer.setState("pause")
 }
+
+//ONCLICK CHANGE SONG BUTTONS
+let sameKeyBtn = document.getElementById("sameKey")
+let similarKeyBtn = document.getElementById("similarKey")
+let targetKeyBtn = document.getElementById("targetKey")
+let randomKeyBtn = document.getElementById("randomKey")
+sameKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+similarKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+targetKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+randomKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+
+let nextSongVis = document.getElementById("nextSongVis")
+function setNextSong() {
+    nextSongVis.textContent = nextSong.title + " in " + nextSong.key
+    TonePlayer.setNextSong(nextSong)
+}
+
 
 
 //GESTIONE BLOCCO VISUALLIZATO
@@ -886,7 +759,7 @@ exports.getFirstRandomSong = function() {
         firstSong = songsByKey[altKeys[randKey]][randSong]
     } while (firstSong == undefined)
 
-    //firstSong = songsByKey['Eb'][2]
+    firstSong = songsByKey['C'][1]
     //console.log(firstSong)
 
     return firstSong

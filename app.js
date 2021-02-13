@@ -44,6 +44,39 @@ pauseBtn.onclick = function () {
     TonePlayer.setState("pause")
 }
 
+//ONCLICK CHANGE SONG BUTTONS
+let sameKeyBtn = document.getElementById("sameKey")
+let similarKeyBtn = document.getElementById("similarKey")
+let targetKeyBtn = document.getElementById("targetKey")
+let randomKeyBtn = document.getElementById("randomKey")
+sameKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+similarKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+targetKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+randomKeyBtn.onclick = function () {
+    //DUMMY
+    nextSong = SimilarSongsRandomizer.getFirstRandomSong()
+    setNextSong()
+}
+
+let nextSongVis = document.getElementById("nextSongVis")
+function setNextSong() {
+    nextSongVis.textContent = nextSong.title + " in " + nextSong.key
+    TonePlayer.setNextSong(nextSong)
+}
+
+
 
 //GESTIONE BLOCCO VISUALLIZATO
 const maxSize = 24
