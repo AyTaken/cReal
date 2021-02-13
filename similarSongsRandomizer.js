@@ -11,6 +11,9 @@ exports.getFirstRandomSong = function() {
         firstSong = songsByKey[altKeys[randKey]][randSong]
     } while (firstSong == undefined)
 
+    //firstSong = songsByKey['Eb'][2]
+    //console.log(firstSong)
+
     return firstSong
 }
 

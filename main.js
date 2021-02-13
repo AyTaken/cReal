@@ -48,7 +48,7 @@ sliderBpm.onchange = function () {
     Tone.Transport.bpm.value = currentSong.bpm
 
     for (let i = 0; i < partiture.length; i++) {
-        partiture[i].duration = Tone.Time({"4n": partiture[i].subdiv}).valueOf()
+        partiture[i].duration = Tone.Time({ "4n": partiture[i].subdiv }).valueOf()
     }
 }
 
@@ -140,13 +140,13 @@ function generatePartiture() {
         //CREAZIONE PARTITURA
         let count = 0
         for (let j = 0; j < chords[i].length; j++) {
-            let temp = { time: " ", measure: " ", notes: " ", duration: " " , subdiv: []}
+            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [] }
             temp.measure = i
             if (j > 0)
                 count = count + duration[j - 1]
             temp.time = i + ":" + count
             temp.notes = Chord.getNotesChord(chords[i][j])
-            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf() * 0.9
+            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf()
             temp.subdiv = duration[j]
             partitureTemp.push(temp)
         }
@@ -155,7 +155,7 @@ function generatePartiture() {
     part = new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
         // will be passed in as the second argument
-        synth.triggerAttackRelease(chord.notes, chord.duration, time);
+        sampler.triggerAttackRelease(chord.notes, chord.duration, time);
         if (currentMeasure != chord.measure) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
@@ -351,20 +351,94 @@ const sampler_2 = new Tone.Sampler({
 }).toDestination();
 
 const sampler = new Tone.Sampler({
-    A2: './piano_notes/A.wav'
-    //"A#2": "./piano_notes/A#.wav",
-    //"B2": "./piano_notes/B.wav",
-    //"C3": "./piano_notes/C.wav",
-    //"C#3": "./piano_notes/C#.wav",
-    //"D4": "./piano_notes/D.wav",
-    //"D#3": "./piano_notes/D#.wav",
-    //"E3": "./piano_notes/E.wav",
-    //"F4": "./piano_notes/F.wav",
-    //"F#3": "./piano_notes/F#.wav",
-    //"G3": "./piano_notes/G.wav",
-    //"G#3": "./piano_notes/G#.wav",
-    //baseUrl: "https://tonejs.github.io/audio/salamander/",
+    'A0': './piano/A0.mp3',
+    'A1': './piano/A1.mp3',
+    'A2': './piano/A2.mp3',
+    'A3': './piano/A3.mp3',
+    'A4': './piano/A4.mp3',
+    'A5': './piano/A5.mp3',
+    'A6': './piano/A6.mp3',
+    'A#0': './piano/As0.mp3',
+    'A#1': './piano/As1.mp3',
+    'A#2': './piano/As2.mp3',
+    'A#3': './piano/As3.mp3',
+    'A#4': './piano/As4.mp3',
+    'A#5': './piano/As5.mp3',
+    'A#6': './piano/As6.mp3',
+    'B0': './piano/B0.mp3',
+    'B1': './piano/B1.mp3',
+    'B2': './piano/B2.mp3',
+    'B3': './piano/B3.mp3',
+    'B4': './piano/B4.mp3',
+    'B5': './piano/B5.mp3',
+    'B6': './piano/B6.mp3',
+    'C0': './piano/C0.mp3',
+    'C1': './piano/C1.mp3',
+    'C2': './piano/C2.mp3',
+    'C3': './piano/C3.mp3',
+    'C4': './piano/C4.mp3',
+    'C5': './piano/C5.mp3',
+    'C6': './piano/C6.mp3',
+    'C7': './piano/C7.mp3',
+    'C#0': './piano/Cs0.mp3',
+    'C#1': './piano/Cs1.mp3',
+    'C#2': './piano/Cs2.mp3',
+    'C#3': './piano/Cs3.mp3',
+    'C#4': './piano/Cs4.mp3',
+    'C#5': './piano/Cs5.mp3',
+    'C#6': './piano/Cs6.mp3',
+    'D0': './piano/D0.mp3',
+    'D1': './piano/D1.mp3',
+    'D2': './piano/D2.mp3',
+    'D3': './piano/D3.mp3',
+    'D4': './piano/D4.mp3',
+    'D5': './piano/D5.mp3',
+    'D6': './piano/D6.mp3',
+    'D#0': './piano/Ds0.mp3',
+    'D#1': './piano/Ds1.mp3',
+    'D#2': './piano/Ds2.mp3',
+    'D#3': './piano/Ds3.mp3',
+    'D#4': './piano/Ds4.mp3',
+    'D#5': './piano/Ds5.mp3',
+    'D#6': './piano/Ds6.mp3',
+    'E0': './piano/E0.mp3',
+    'E1': './piano/E1.mp3',
+    'E2': './piano/E2.mp3',
+    'E3': './piano/E3.mp3',
+    'E4': './piano/E4.mp3',
+    'E5': './piano/E5.mp3',
+    'E6': './piano/E6.mp3',
+    'F0': './piano/F0.mp3',
+    'F1': './piano/F1.mp3',
+    'F2': './piano/F2.mp3',
+    'F3': './piano/F3.mp3',
+    'F4': './piano/F4.mp3',
+    'F5': './piano/F5.mp3',
+    'F6': './piano/F6.mp3',
+    'F#0': './piano/Fs0.mp3',
+    'F#1': './piano/Fs1.mp3',
+    'F#2': './piano/Fs2.mp3',
+    'F#3': './piano/Fs3.mp3',
+    'F#4': './piano/Fs4.mp3',
+    'F#5': './piano/Fs5.mp3',
+    'F#6': './piano/Fs6.mp3',
+    'G0': './piano/G0.mp3',
+    'G1': './piano/G1.mp3',
+    'G2': './piano/G2.mp3',
+    'G3': './piano/G3.mp3',
+    'G4': './piano/G4.mp3',
+    'G5': './piano/G5.mp3',
+    'G6': './piano/G6.mp3',
+    'G#0': './piano/Gs0.mp3',
+    'G#1': './piano/Gs1.mp3',
+    'G#2': './piano/Gs2.mp3',
+    'G#3': './piano/Gs3.mp3',
+    'G#4': './piano/Gs4.mp3',
+    'G#5': './piano/Gs5.mp3',
+    'G#6': './piano/Gs6.mp3',
+    //baseUrl: "./piano/",
 }).toDestination();
+sampler.volume.value = -12
 
 //Tone.loaded().then(() => {
 //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
@@ -560,11 +634,11 @@ exports.getNotesChord = function (chord) {
     if (rqi[2].includes('b'))
         rqi[2] = chromaSharpNormalization(rqi[2]);
 
-    return notes(rqi[0], mask, rqi[2])   
+    return notes(rqi[0], mask, rqi[2])
 
 }
 
-function parse(chord){
+function parse(chord) {
     let root
     let quality = []
     let inversion = []
@@ -574,11 +648,11 @@ function parse(chord){
         root = chord[0] + chord[1]
         point = 2
     }
-    else 
+    else
         root = chord[0]
-    
+
     if (chord.includes('/')) {
-        for ( ; point < chord.indexOf('/'); point++)
+        for (; point < chord.indexOf('/'); point++)
             quality.push(chord[point])
         for (let index = chord.indexOf('/') + 1; index < chord.length; index++)
             inversion.push(chord[index])
@@ -601,7 +675,7 @@ function chromaSharpNormalization(note) {
         case 'Ab':
             return 'G#'
         case 'Bb':
-            return "A#"    
+            return "A#"
     }
 }
 
@@ -609,7 +683,7 @@ function notes(root, mask, inversion) {
     let keyboard = []
 
     //Keyboard creation
-    for (let i = 2; i < 6; i++)
+    for (let i = 0; i < 6; i++)
         for (let k = 0; k < chromaSharp.length; k++)
             keyboard.push(chromaSharp[k] + i)
 
@@ -618,29 +692,29 @@ function notes(root, mask, inversion) {
     let rootIndex = keyboard.indexOf(root + '3');
 
     for (let i = 0; i < mask.length; i++)
-        chordNotes.push(keyboard[rootIndex+mask[i]])
+        chordNotes.push(keyboard[rootIndex + mask[i]])
 
-    
+
     if (inversion != '') {
         let temp = []
         let index
 
         for (let i = 0; i < chordNotes.length; i++)
-            temp.push(chordNotes[i].slice(0,chordNotes[i].length-1))
+            temp.push(chordNotes[i].slice(0, chordNotes[i].length - 1))
 
         index = temp.indexOf(inversion)
 
         if (index != -1) {
             let dist = keyboard.indexOf(chordNotes[index]) - keyboard.indexOf(chordNotes[0])
 
-             //In case of extentions over more octaves
+            //In case of extentions over more octaves
             dist = dist % 12
             dist = 12 - dist
 
-            chordNotes[index] = keyboard[keyboard.indexOf(chordNotes[0])-dist]
+            chordNotes[index] = keyboard[keyboard.indexOf(chordNotes[0]) - dist]
         }
     }
-    
+
     return chordNotes
 }
 
@@ -652,8 +726,8 @@ function notes(root, mask, inversion) {
 
 
 
-let test = 
-['5', '2', 'add9', '+', 'o', 'h', 'sus', '^', '-', '^7', '-7', '7', '7sus', 'h7', 'o7', '^9', '^13', '6', '69', '^7#11', '^9#11', '^7#5', '-6', '-69', '-^7', '-^9', '-9', '-11', '-7b5', 'h9', '-b6', '-#5', '9', '7b9', '7#9', '7#11', '7b5', '7#5', '9#11', '9b5', '9#5', '7b13', '7#9#5', '7#9b5', '7#9#11', '7b9#11', '7b9b5', '7b9#5', '7b9#9', '7b9b13', '7alt', '13', '13#11', '13b9', '13#9', '7b9sus', '7susadd3', '9sus', '13sus', '7b13sus', '11']
+let test =
+    ['5', '2', 'add9', '+', 'o', 'h', 'sus', '^', '-', '^7', '-7', '7', '7sus', 'h7', 'o7', '^9', '^13', '6', '69', '^7#11', '^9#11', '^7#5', '-6', '-69', '-^7', '-^9', '-9', '-11', '-7b5', 'h9', '-b6', '-#5', '9', '7b9', '7#9', '7#11', '7b5', '7#5', '9#11', '9b5', '9#5', '7b13', '7#9#5', '7#9b5', '7#9#11', '7b9#11', '7b9b5', '7b9#5', '7b9#9', '7b9b13', '7alt', '13', '13#11', '13b9', '13#9', '7b9sus', '7susadd3', '9sus', '13sus', '7b13sus', '11']
 
 
 
@@ -663,79 +737,113 @@ function getMask(quality) {
     switch (quality) {
         case '5':
             //Power chord
-            ris = [0,7]
+            ris = [0, 7]
             break;
         case '2':
             //Major triad + major 2nd
-            ris = [0,2,4,7]
+            ris = [0, 2, 4, 7]
             break;
         case 'add9':
             //Major triad + 9th
-            ris = [0,4,7,14]
+            ris = [0, 4, 7, 14]
             break;
         case '+':
             //Augmented major triad
-            ris = [0,4,8]
+            ris = [0, 4, 8]
             break;
         case 'o':
             //Diminished minor triad
-            ris = [0,3,6]
+            ris = [0, 3, 6]
             break;
         case 'h':
             //Diminished major triad
-            ris = [0,4,6]
+            ris = [0, 4, 6]
             break;
         case 'sus':
             //Major triad + 4th - major 3rd
-            ris = [0,5,7]
+            ris = [0, 5, 7]
             break;
         case '^':
             //Major triad
-            ris = [0,4,7]
+            ris = [0, 4, 7]
             break;
         case '-':
             //Minor triad
-            ris = [0,3,7]
+            ris = [0, 3, 7]
             break;
         case '^7':
             //Major 7th
-            ris = [0,4,7,11]
+            ris = [0, 4, 7, 11]
             break;
         case '-7':
             //Minor 7th
-            ris = [0,3,7,10]
+            ris = [0, 3, 7, 10]
             break;
         case '7':
             //Dominant 7th
-            ris = [0,4,7,10]
+            ris = [0, 4, 7, 10]
             break;
         case '7sus':
             //Dominant 7th sus4
-            ris = [0,5,7,10]
+            ris = [0, 5, 7, 10]
             break;
         case 'h7':
             //Half-diminished 7th
-            ris = [0,3,6,10]
+            ris = [0, 3, 6, 10]
             break;
         case 'o7':
             //Diminished 7th
-            ris = [0,3,6,9]
+            ris = [0, 3, 6, 9]
             break;
         case '^9':
             //Major 9th
-            ris = [0,4,7,11,14]
+            ris = [0, 4, 7, 11, 14]
             break;
         case '^13':
             //Major 13th
-            ris = [0,4,7,11,14,17,21]
+            ris = [0, 4, 7, 11, 14, 17, 21]
             break;
-        default:
-            //Dominant 7th
-            ris = [0,4,7,10]
+        case '6':
+            //Major 6th
+            ris = [0, 4, 7, 9]
+            break;
+        case '69':
+            //Major 6th 9th
+            ris = [0, 4, 7, 9, 14]
+            break;
+        case '^7#11':
+            //Major 7th #11
+            ris = [0, 4, 7, 11, 18]
+            break;
+        case '^9#11':
+            //Major 9th #11
+            ris = [0, 4, 7, 11, 14, 18]
+            break;
+        case '^7#5':
+            //Major 7th #5
+            ris = [0, 4, 8, 11]
+            break;
+        case '-6':
+            //Minor 6th 
+            ris = [0, 3, 7, 9]
+            break;
+        case '-69':
+            //Minor 6th 9th
+            ris = [0, 3, 7, 9, 14]
+            break;
+        case '-^7':
+            //Minor 6th 9th
+            ris = [0, 3, 7, 11]
             break;
 
-        
-            
+
+        default:
+            //Dominant 7th
+            ris = [0, 4, 7, 10]
+            break;
+
+
+
 
     }
 
@@ -777,6 +885,9 @@ exports.getFirstRandomSong = function() {
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
         firstSong = songsByKey[altKeys[randKey]][randSong]
     } while (firstSong == undefined)
+
+    //firstSong = songsByKey['Eb'][2]
+    //console.log(firstSong)
 
     return firstSong
 }

@@ -50,6 +50,14 @@
     height: 25%;
 }
 
+#changeSongSettings {
+    height: 35%;
+}
+
+#tempoSettings {
+    height: 15%;
+}
+
 .btn {
     position: relative;
     margin: 40px 5%;

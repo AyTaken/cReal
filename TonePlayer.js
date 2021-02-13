@@ -47,7 +47,7 @@ sliderBpm.onchange = function () {
     Tone.Transport.bpm.value = currentSong.bpm
 
     for (let i = 0; i < partiture.length; i++) {
-        partiture[i].duration = Tone.Time({"4n": partiture[i].subdiv}).valueOf()
+        partiture[i].duration = Tone.Time({ "4n": partiture[i].subdiv }).valueOf()
     }
 }
 
@@ -139,13 +139,13 @@ function generatePartiture() {
         //CREAZIONE PARTITURA
         let count = 0
         for (let j = 0; j < chords[i].length; j++) {
-            let temp = { time: " ", measure: " ", notes: " ", duration: " " , subdiv: []}
+            let temp = { time: " ", measure: " ", notes: " ", duration: " ", subdiv: [] }
             temp.measure = i
             if (j > 0)
                 count = count + duration[j - 1]
             temp.time = i + ":" + count
             temp.notes = Chord.getNotesChord(chords[i][j])
-            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf() * 0.9
+            temp.duration = Tone.Time({ "4n": duration[j] }).valueOf()
             temp.subdiv = duration[j]
             partitureTemp.push(temp)
         }
@@ -154,7 +154,7 @@ function generatePartiture() {
     part = new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
         // will be passed in as the second argument
-        synth.triggerAttackRelease(chord.notes, chord.duration, time);
+        sampler.triggerAttackRelease(chord.notes, chord.duration, time);
         if (currentMeasure != chord.measure) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
@@ -350,20 +350,94 @@ const sampler_2 = new Tone.Sampler({
 }).toDestination();
 
 const sampler = new Tone.Sampler({
-    A2: './piano_notes/A.wav'
-    //"A#2": "./piano_notes/A#.wav",
-    //"B2": "./piano_notes/B.wav",
-    //"C3": "./piano_notes/C.wav",
-    //"C#3": "./piano_notes/C#.wav",
-    //"D4": "./piano_notes/D.wav",
-    //"D#3": "./piano_notes/D#.wav",
-    //"E3": "./piano_notes/E.wav",
-    //"F4": "./piano_notes/F.wav",
-    //"F#3": "./piano_notes/F#.wav",
-    //"G3": "./piano_notes/G.wav",
-    //"G#3": "./piano_notes/G#.wav",
-    //baseUrl: "https://tonejs.github.io/audio/salamander/",
+    'A0': './piano/A0.mp3',
+    'A1': './piano/A1.mp3',
+    'A2': './piano/A2.mp3',
+    'A3': './piano/A3.mp3',
+    'A4': './piano/A4.mp3',
+    'A5': './piano/A5.mp3',
+    'A6': './piano/A6.mp3',
+    'A#0': './piano/As0.mp3',
+    'A#1': './piano/As1.mp3',
+    'A#2': './piano/As2.mp3',
+    'A#3': './piano/As3.mp3',
+    'A#4': './piano/As4.mp3',
+    'A#5': './piano/As5.mp3',
+    'A#6': './piano/As6.mp3',
+    'B0': './piano/B0.mp3',
+    'B1': './piano/B1.mp3',
+    'B2': './piano/B2.mp3',
+    'B3': './piano/B3.mp3',
+    'B4': './piano/B4.mp3',
+    'B5': './piano/B5.mp3',
+    'B6': './piano/B6.mp3',
+    'C0': './piano/C0.mp3',
+    'C1': './piano/C1.mp3',
+    'C2': './piano/C2.mp3',
+    'C3': './piano/C3.mp3',
+    'C4': './piano/C4.mp3',
+    'C5': './piano/C5.mp3',
+    'C6': './piano/C6.mp3',
+    'C7': './piano/C7.mp3',
+    'C#0': './piano/Cs0.mp3',
+    'C#1': './piano/Cs1.mp3',
+    'C#2': './piano/Cs2.mp3',
+    'C#3': './piano/Cs3.mp3',
+    'C#4': './piano/Cs4.mp3',
+    'C#5': './piano/Cs5.mp3',
+    'C#6': './piano/Cs6.mp3',
+    'D0': './piano/D0.mp3',
+    'D1': './piano/D1.mp3',
+    'D2': './piano/D2.mp3',
+    'D3': './piano/D3.mp3',
+    'D4': './piano/D4.mp3',
+    'D5': './piano/D5.mp3',
+    'D6': './piano/D6.mp3',
+    'D#0': './piano/Ds0.mp3',
+    'D#1': './piano/Ds1.mp3',
+    'D#2': './piano/Ds2.mp3',
+    'D#3': './piano/Ds3.mp3',
+    'D#4': './piano/Ds4.mp3',
+    'D#5': './piano/Ds5.mp3',
+    'D#6': './piano/Ds6.mp3',
+    'E0': './piano/E0.mp3',
+    'E1': './piano/E1.mp3',
+    'E2': './piano/E2.mp3',
+    'E3': './piano/E3.mp3',
+    'E4': './piano/E4.mp3',
+    'E5': './piano/E5.mp3',
+    'E6': './piano/E6.mp3',
+    'F0': './piano/F0.mp3',
+    'F1': './piano/F1.mp3',
+    'F2': './piano/F2.mp3',
+    'F3': './piano/F3.mp3',
+    'F4': './piano/F4.mp3',
+    'F5': './piano/F5.mp3',
+    'F6': './piano/F6.mp3',
+    'F#0': './piano/Fs0.mp3',
+    'F#1': './piano/Fs1.mp3',
+    'F#2': './piano/Fs2.mp3',
+    'F#3': './piano/Fs3.mp3',
+    'F#4': './piano/Fs4.mp3',
+    'F#5': './piano/Fs5.mp3',
+    'F#6': './piano/Fs6.mp3',
+    'G0': './piano/G0.mp3',
+    'G1': './piano/G1.mp3',
+    'G2': './piano/G2.mp3',
+    'G3': './piano/G3.mp3',
+    'G4': './piano/G4.mp3',
+    'G5': './piano/G5.mp3',
+    'G6': './piano/G6.mp3',
+    'G#0': './piano/Gs0.mp3',
+    'G#1': './piano/Gs1.mp3',
+    'G#2': './piano/Gs2.mp3',
+    'G#3': './piano/Gs3.mp3',
+    'G#4': './piano/Gs4.mp3',
+    'G#5': './piano/Gs5.mp3',
+    'G#6': './piano/Gs6.mp3',
+    //baseUrl: "./piano/",
 }).toDestination();
+sampler.volume.value = -12
 
 //Tone.loaded().then(() => {
 //sampler.triggerAttackRelease(Chord.getNotesChord(currentSong[0][0]), "4n");
