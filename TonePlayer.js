@@ -22,16 +22,16 @@ let currentMeasure = 0
 let loop = true
 
 
-exports.setCurrentSong = function (song) {
+exports.setCurrentSong = function(song) {
     Object.assign(currentSong, song)
     partiture = generatePartiture()
 }
 
-exports.setNextSong = function (song) {
+exports.setNextSong = function(song) {
     Object.assign(nextSong, song)
 }
 
-exports.setConnectSong = function (song) {
+exports.setConnectSong = function(song) {
     Object.assign(connectSong, song)
 }
 
@@ -42,7 +42,7 @@ console.log(nextSong)
 console.log(connectSong)*/
 
 let sliderBpm = document.getElementById("sliderTempo")
-sliderBpm.onchange = function () {
+sliderBpm.onchange = function() {
     currentSong.bpm = sliderBpm.value
     Tone.Transport.bpm.value = currentSong.bpm
 
@@ -51,66 +51,6 @@ sliderBpm.onchange = function () {
     }
 }
 
-/*function play() {
-    Tone.Transport.bpm.value = currentSong.bpm
-    Tone.Transport.start();
-    let chords = currentSong.music.measures
-
-    //Creazione temp per scheduling sequence
-    let temp = []
-    for (let i = 0; i < chords.length; i++) {
-        if (chords[i].length > 1) {
-            let temp2 = []
-            for (let j = 0; j < chords[i].length; j++) {
-                temp2.push(j)
-        }
-        temp.push(temp2)
-    
-        } else {
-            temp.push(0)
-        } 
-    }
-
-    //firstMeasure = currentSong.music.measures[measureNumber]
-    pausedMeasure = 0;
-    //paused = false;
-    const seq = new Tone.Sequence((time, index) => {
-        let duration = 4 / chords[index].length
-        let durString = duration + "n"
-        let temp2 = []
-        for (let i = 0; i < chords[index].length; i++) {
-            temp2.push(i)
-        }
-        const seq2 = new Tone.Sequence((time2, id2) => {
-            if (state == "play") {
-                if (pausedMeasure != 0)
-                    index = pausedMeasure
-                sampler.triggerAttackRelease(chords[index][id2], durString);
-                console.log(time, time2)
-                measureNumber = chords[index]
-                App.setCurrentMeasure(measureNumber)
-                // subdivisions are given as subarrays
-            } else if (state = "pause") {
-                paused = true
-                pausedMeasure = measureNumber
-                Tone.Transport.stop()
-            }
-            if (state = "stop") {
-                pausedMeasure = 0
-                measureNumber = 0
-                Tone.Transport.stop()
-            }
-            if (measureNumber == currentSong.music.measures.length) {
-                measureNumber = 0
-                if (loop == false) {
-                    if (connectSong)
-                        //playConnectSong() -- > "setCurrentMeasureConnect()"
-                        currentSong = nextSong
-                }
-            }
-        }, temp2, "4n").start(0)
-    }, temp, "1m").start(0);
-}*/
 
 //Funzione per generare l'oggetto da dare a ToneEvent.Part
 function generatePartiture() {
@@ -186,7 +126,7 @@ function pause() {
 // Chiamare la next song solo in play?
 
 
-exports.setState = function (appState) {
+exports.setState = function(appState) {
     state = appState
     switch (state) {
         case "play":
@@ -212,7 +152,7 @@ exports.setState = function (appState) {
 }*/
 
 // Scheletro
-exports.loopCurrentSong = function (loop, song) {
+exports.loopCurrentSong = function(loop, song) {
     currentSong = song
     currentMeasure = song.music.measure;
     if (loop == true) {
@@ -223,8 +163,8 @@ exports.loopCurrentSong = function (loop, song) {
     return loop;
 }
 
-exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
-    var loopChords = new Tone.Event(function (time, chord, nLoops, nMeasures) {
+exports.loopMeasures = function(time, chord, nLoops, nMeasures) {
+    var loopChords = new Tone.Event(function(time, chord, nLoops, nMeasures) {
         //the chord as well as the exact time of the event
         //are passed in as arguments to the callback function
     }, chord);
@@ -239,7 +179,7 @@ exports.loopMeasures = function (time, chord, nLoops, nMeasures) {
     nextSong = song;
 }*/
 
-exports.changeSong = function (song_1, song_2) {
+exports.changeSong = function(song_1, song_2) {
     for (let index = 0; index < song_1.music.measures.length; index++) {
         if (index == song_1.music.measures.length) {
             song_2.bpm = song_1.bpm
@@ -248,7 +188,7 @@ exports.changeSong = function (song_1, song_2) {
     }
 }
 
-exports.bpmModulation = function (song) {
+exports.bpmModulation = function(song) {
     let bpmMod = new Tone.Transport()
     Tone.Transport.bpm.value = song.bpm;
     //ramp the bpm to the right one over 12 seconds
@@ -257,7 +197,7 @@ exports.bpmModulation = function (song) {
     // now I have to find a way to make follow the Tone.Transport bpm change to the original song.
 }
 
-exports.chooseNextSong = function (song) {
+exports.chooseNextSong = function(song) {
 
 }
 
