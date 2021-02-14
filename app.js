@@ -9,11 +9,12 @@ let currentSong
 let nextSong
 let currentMeasure = 0
 let connectChords
-let connectChordsIndex = 0
+let connectChordsIndex = -1
 
 exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
+    console.log("App.js: ", currentMeasure, connectChordsIndex)
     scrollSubView()
     //Change nella view la misura illuminata
     updateView(currentSong, viewedBlock)
@@ -22,9 +23,12 @@ exports.setCurrentMeasure = function (measureNum) {
 exports.setCurrentMeasureConnect = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     connectChordsIndex = measureNum;
+    console.log("App.js: ", currentMeasure, connectChordsIndex)
     //Change nella view la misura illuminata
     updateView(currentSong, viewedBlock)
 }
+
+const chordPanel = document.getElementById("chords")
 
 exports.triggerNextSong = function () {
     currentSong = nextSong
@@ -33,13 +37,25 @@ exports.triggerNextSong = function () {
     TonePlayer.setNextSongCurrent(currentSong)
     setKeyDropdown()
 
-    for (let i = 0; i < measures.length && i < maxSize; i++) {
-        viewedBlock.pop()
+    //Clear chord grid
+    for (let i = 0; i < chordPanel.children.length; i++) {
+        chordPanel.children[i].textContent = ""
+        for (let j = 0; j < chordPanel.children[i].classList.length; j++) {
+            if (chordPanel.children[i].classList[j] == "selectedCell") {
+                console.log(i, " HAS")
+                chordPanel.children[i].classList.remove("selectedCell")
+            }
+        }
     }
+
+    viewedBlock = []
+    viewIndex = 0
+    finalShift = 0
 
     for (let i = 0; i < measures.length && i < maxSize; i++) {
         viewedBlock.push(measures[i])
     }
+
     updateView(currentSong, viewedBlock)
 }
 
@@ -87,17 +103,16 @@ playBtn.onclick = function () {
 }
 stopBtn.onclick = function () {
     TonePlayer.setState("stop")
-    
+    let measures = currentSong.music.measures
+
     //RESET CHORD VIEW
-    for (let i = 0; i < measures.length && i < maxSize; i++) {
-        viewedBlock.pop()
-    }
+    viewedBlock = []
 
     for (let i = 0; i < measures.length && i < maxSize; i++) {
         viewedBlock.push(measures[i])
     }
     updateView(currentSong, viewedBlock)
-    
+
 }
 pauseBtn.onclick = function () {
     TonePlayer.setState("pause")
@@ -109,23 +124,23 @@ let similarKeyBtn = document.getElementById("similarKey")
 let targetKeyBtn = document.getElementById("targetKey")
 let targetKey = document.getElementById("keys").value
 let randomKeyBtn = document.getElementById("randomKey")
-sameKeyBtn.onclick = function() {
+sameKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
     setNextSong()
 }
-similarKeyBtn.onclick = function() {
+similarKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getSimilarKeySong(currentSong)
     setNextSong()
 }
-targetKeyBtn.onclick = function() {
+targetKeyBtn.onclick = function () {
     //DUMMY
     let targetKey = document.getElementById("keys").value
     nextSong = SimilarSongsRandomizer.getTargetKeySong(targetKey)
     setNextSong()
 }
-randomKeyBtn.onclick = function() {
+randomKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getRandomSong()
     setNextSong()

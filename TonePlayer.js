@@ -27,7 +27,7 @@ let harmonicOn = false
 //Lo stato può essere play, stop, pause 
 let state = "stop"
 let currentMeasure = 0
-let connectChordsIndex
+let connectChordsIndex = -1
 let loop = true
 
 
@@ -40,8 +40,6 @@ exports.setCurrentSong = function (song) {
 
 exports.setNextSongCurrent = function (song) {
     Object.assign(currentSong, song)
-    nextSong = {}
-    connectSong = {}
 }
 
 
@@ -130,10 +128,13 @@ function generatePartiture(chords) {
     partitureTemp[sum - 1].lastChord = true
     partitureTemp[0].firstChord = true
 
-    let partTemp = new Tone.Part(((time, chord) => {
+    let partTemp = generatePart(partitureTemp, timeSignature)
+
+    /*new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
         // will be passed in as the second argument
         sampler.triggerAttackRelease(chord.notes, chord.duration, time);
+        console.log(currentMeasure)
         if (currentMeasure != chord.measure) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
@@ -180,7 +181,7 @@ function generatePartiture(chords) {
     partTemp.humanize = true
     partTemp.loop = true
     partTemp.loopStart = partitureTemp[0].time
-    partTemp.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)
+    partTemp.loopEnd = (partitureTemp[partitureTemp.length - 1].measure + ":" + timeSignature)*/
 
     return [partitureTemp, partTemp]
 }
@@ -190,36 +191,53 @@ function generatePart(targetPartiture, timeSignature) {
         // the notes given as the second element in the array
         // will be passed in as the second argument
         sampler.triggerAttackRelease(chord.notes, chord.duration, time);
-        if (currentMeasure != chord.measure) {
+        console.log("PART CURRENT MEASURE: ", chord.measure)
+        if (currentMeasure != chord.measure && !harmonicOn) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
         }
+        if (harmonicOn) {
+            //First chord harmonic connect
+            if (chord.firstChord) {
+                Controller.triggerNextSong()
+                currentMeasure = -1
+                Controller.setCurrentMeasure(-1)
+            }
+            if (connectChordsIndex != chord.measure) {
+                connectChordsIndex = chord.measure
+                Controller.setCurrentMeasureConnect(connectChordsIndex)
+            }
+        }
+        console.log("TonePlayer: ", currentMeasure, connectChordsIndex)
         if (chord.lastChord) {
-            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+              if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
                 if (!harmonicOn) {
                     //Play harmonic Connect chords
                     harmonicOn = true
                     Tone.Transport.stop()
                     Tone.Transport.cancel(0)
-                    partConnect.start(chord.duration)
+
+                    part = generatePart(partitureConnect, timeSignature)
+                    part.loop = false
+                    part.start(chord.duration)
                     Tone.Transport.start()
-                    if (connectChordsIndex != chord.measure) {
-                        currentMeasure = chord.measure
-                        Controller.setCurrentMeasure(currentMeasure)
-                    }
                 } else {
                     //Delete currente harmonic connect
                     harmonicOn = false
                     Controller.setConnectChords([])
+                    connectChordsIndex = -1
+                    Controller.setCurrentMeasureConnect(-1)
+                    
+                    nextSong = {}
+                    connectSong = {}
 
 
-                    Controller.triggerNextSong()
                     //Play next song
                     Tone.Transport.stop()
                     Tone.Transport.cancel(0)
 
                     partiture = partitureNextSong
-                    part = partNextSong
+                    part = generatePart(partiture, timeSignature)
                     part.loop = true
                     part.start(chord.duration)
                     Tone.Transport.start()
@@ -232,7 +250,7 @@ function generatePart(targetPartiture, timeSignature) {
     partTemp.loop = true
     partTemp.loopStart = targetPartiture[0].time
     partTemp.loopEnd = (targetPartiture[targetPartiture.length - 1].measure + ":" + timeSignature)
-    
+
     return partTemp;
 }
 
@@ -249,9 +267,13 @@ function play() {
 function stop() {
     Tone.Transport.stop()
     Tone.Transport.cancel(0)
-    part = generatePart(partiture, extractTimeSignature(currentSong.music.timeSignature))
+
+    if (harmonicOn) {
+        part = generatePart(partitureConnect, extractTimeSignature(currentSong.music.timeSignature))
+    } else {
+        part = generatePart(partiture, extractTimeSignature(currentSong.music.timeSignature))
+    }
     part.start()
-    Controller.setCurrentMeasure(0)
 }
 
 function pause() {
