@@ -13,23 +13,20 @@ exports.getFirstRandomSong = function() {
     let randSong
     do {
         randKey = Math.floor(Math.random() * altKeys.length)
-        //console.log("ok, randkey = " + randKey)
+            //console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
-        //console.log("ok, randSong = " + randSong)
+            //console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
-<<<<<<< HEAD
         console.log("ok, firstSong = " + firstSong)
             //console.log("ok, title = " + firstSong.title)
-=======
-        //console.log("ok, firstSong = " + firstSong)
-       // console.log("ok, title = " + firstSong.title)
->>>>>>> a08d7853482aa6dbb98a6332cca8b7788228554a
+            //console.log("ok, firstSong = " + firstSong)
+            // console.log("ok, title = " + firstSong.title)
 
 
     } while (firstSong == undefined)
 
     firstSong = songsByKey['C'][1]
-    //console.log(firstSong)
+        //console.log(firstSong)
 
     return firstSong
 }

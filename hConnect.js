@@ -32,7 +32,7 @@ exports.diaMod = function(song1, song2) {
     let secondChordModulation
     let thirdChordModulation
     let chords = []
-    if (n == 1 || n == 2 || n == -11 || n == 12 || 24) {
+    if (n == 1 || n == 2 || n == -11 || n == 12) {
         nextFifthIndex = currentFifthIndex + n
         firstChordModulation = keys[currentKeyIndex + 4] //iii-
         secondChordModulation = keys[currentKeyIndex + 9] //vi- which is ii- in next key
@@ -54,6 +54,13 @@ exports.diaMod = function(song1, song2) {
         secondChordModulation = keys[currentKeyIndex + 7]
         thirdChordModulation = keys[currentKeyIndex]
         chords = [firstChordModulation + '-', secondChordModulation + '^', thirdChordModulation + '^']
+    } else if (n == 24) {
+        // may an I IV V vi could be used before that
+        currentKeyIndex = keys.indexOf(song2.key)
+        firstChordModulation = keys[currentKeyIndex + 2]
+        secondChordModulation = keys[currentKeyIndex + 7]
+        thirdChordModulation = keys[currentKeyIndex]
+        chords = [firstChordModulation + '-', secondChordModulation + '^', thirdChordModulation + '^']
     }
 
     console.log(n1)
@@ -70,12 +77,14 @@ exports.diaMod = function(song1, song2) {
 // I, II, iii, IV, V, vi, vii dim
 // VI, vii, i, ii#, III, iv, v
 
-function pivotChord(song_1, song_2) {
+exports.pivotChord = function(song_1, song_2) {
+    let chords[]
     currentKeyIndex = keys.indexOf(song_1.key)
     nextKeyIndex = keys.indexOf(song_2.key)
     firstChordModulation = currentKeyIndex + 11;
     currentKeyIndex = nextKeyIndex
-    SecondChordMudaltion = currentKeyIndex + 11;
+    secondChordModulation = currentKeyIndex + 11;
+    chords = [firstChordModulation, secondChordModulation]
 }
 
 // Enharmonic dominant
@@ -92,7 +101,7 @@ function pivotChord(song_1, song_2) {
 // If from a major I wanto to go to relative minor I play IV, V, vi (that is our next key i)
 // vii, iii (that is ii, v) and then (now I'm in the new key) i of relative minor
 
-function deceptiveCadence(song) {
+exports.deceptiveCadence = function(song) {
     currentkey = song.key
     keyIndex = keys.indexOf(currentKey)
     chord1 = currentKey
