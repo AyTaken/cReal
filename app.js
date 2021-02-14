@@ -8,17 +8,81 @@ const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "
 let currentSong
 let nextSong
 let currentMeasure = 0
+let connectChords
+let connectChordsIndex = -1
 
-exports.setCurrentMeasure = function(measureNum) {
+exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
     currentMeasure = measureNum;
+    console.log("App.js: ", currentMeasure, connectChordsIndex)
     scrollSubView()
-        //Change nella view la misura illuminata
+    //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
+}
+
+exports.setCurrentMeasureConnect = function (measureNum) {
+    //Refers to the current played measure by TonePlayer
+    connectChordsIndex = measureNum;
+    console.log("App.js: ", currentMeasure, connectChordsIndex)
+    //Change nella view la misura illuminata
+    updateView(currentSong, viewedBlock)
+}
+
+const chordPanel = document.getElementById("chords")
+
+exports.triggerNextSong = function () {
+    currentSong = nextSong
+    measures = currentSong.music.measures
+    measures = capChords(measures, currentSong.music.timeSignature)
+    TonePlayer.setNextSongCurrent(currentSong)
+    setKeyDropdown()
+
+    //Clear chord grid
+    for (let i = 0; i < chordPanel.children.length; i++) {
+        chordPanel.children[i].textContent = ""
+        for (let j = 0; j < chordPanel.children[i].classList.length; j++) {
+            if (chordPanel.children[i].classList[j] == "selectedCell") {
+                console.log(i, " HAS")
+                chordPanel.children[i].classList.remove("selectedCell")
+            }
+        }
+    }
+
+    viewedBlock = []
+    viewIndex = 0
+    finalShift = 0
+
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.push(measures[i])
+    }
+
+    updateView(currentSong, viewedBlock)
+}
+
+
+const chordPanelConnect = document.getElementById("connectChords")
+
+exports.setConnectChords = function (cChords) {
+    connectChords = cChords
+
+    //Remove previous children
+    while (chordPanelConnect.firstChild) {
+        chordPanelConnect.removeChild(chordPanelConnect.lastChild);
+    }
+
+    //Grid generation harmonic conenct
+    for (let i = 0; i < connectChords.length; i++) {
+        let div = document.createElement("div");
+        div.id = "cellHarmonic" + i
+        div.classList.add("cell")
+        chordPanelConnect.appendChild(div)
+    }
+
     updateView(currentSong, viewedBlock)
 }
 
 function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, viewIndex)
+    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex)
 }
 
 
@@ -34,13 +98,23 @@ setKeyDropdown()
 let playBtn = document.getElementById("play")
 let stopBtn = document.getElementById("stop")
 let pauseBtn = document.getElementById("pause")
-playBtn.onclick = function() {
+playBtn.onclick = function () {
     TonePlayer.setState("play")
 }
-stopBtn.onclick = function() {
+stopBtn.onclick = function () {
     TonePlayer.setState("stop")
+    let measures = currentSong.music.measures
+
+    //RESET CHORD VIEW
+    viewedBlock = []
+
+    for (let i = 0; i < measures.length && i < maxSize; i++) {
+        viewedBlock.push(measures[i])
+    }
+    updateView(currentSong, viewedBlock)
+
 }
-pauseBtn.onclick = function() {
+pauseBtn.onclick = function () {
     TonePlayer.setState("pause")
 }
 
@@ -50,23 +124,23 @@ let similarKeyBtn = document.getElementById("similarKey")
 let targetKeyBtn = document.getElementById("targetKey")
 let targetKey = document.getElementById("keys").value
 let randomKeyBtn = document.getElementById("randomKey")
-sameKeyBtn.onclick = function() {
+sameKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getSameKeySong(currentSong)
     setNextSong()
 }
-similarKeyBtn.onclick = function() {
+similarKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getSimilarKeySong(currentSong)
     setNextSong()
 }
-targetKeyBtn.onclick = function() {
+targetKeyBtn.onclick = function () {
     //DUMMY
     let targetKey = document.getElementById("keys").value
     nextSong = SimilarSongsRandomizer.getTargetKeySong(targetKey)
     setNextSong()
 }
-randomKeyBtn.onclick = function() {
+randomKeyBtn.onclick = function () {
     //DUMMY
     nextSong = SimilarSongsRandomizer.getRandomSong()
     setNextSong()
@@ -106,7 +180,7 @@ function scrollSubView() {
 
 function circularMotion(num, addSocNum, mod) {
     let ris
-        //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
+    //num sempre postivo, il secgno di addSocNum decice se l'operazione è una somma o una sottrazione
     if (addSocNum >= 0) {
         ris = num + addSocNum
         ris = ris % mod
@@ -137,7 +211,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function() {
+document.getElementById("onClickSubmit").onclick = function () {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {

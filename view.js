@@ -7,10 +7,12 @@ let bpm
 let timeSignature
 let chords = []
 let currentMeasure
-let connectChords
+let connectChords = []
+let connectChordsIndex
 
 //Dom elements
 const chordPanel = document.getElementById("chords")
+const chordPanelConnect = document.getElementById("connectChords")
 const titleDiv = document.getElementById("songTitle")
 const composerDiv = document.getElementById("composer")
 const styleAndKeyDiv = document.getElementById("styleAndKey")
@@ -22,7 +24,8 @@ for (let i = 0; i < 24; i++) {
     chordPanel.appendChild(div)
 }
 
-exports.changeState = function (song, subMeasure, currentMeas) {
+
+exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex) {
     title = song.title
     composer = song.composer
     style = song.style
@@ -30,6 +33,8 @@ exports.changeState = function (song, subMeasure, currentMeas) {
     bpm = song.bpm
     timeSignature = song.music.timeSignature
     currentMeasure = currentMeas
+    connectChords = harmonicConnectChords
+    connectChordsIndex = harmonicConnectIndex
     //Copy all measures
     for (let i = 0; i < 24; i++)
         chords.pop()
@@ -50,6 +55,15 @@ function render() {
             chordPanel.children[i].classList.add("selectedCell")
         else 
             chordPanel.children[i].classList.remove("selectedCell")
+    }
+
+    //Render harmonic connect
+    for (let i = 0; i < chordPanelConnect.children.length; i++) {
+        chordPanelConnect.children[i].textContent = connectChords[i]
+        if (i == connectChordsIndex)
+            chordPanelConnect.children[i].classList.add("selectedCell")
+        else 
+            chordPanelConnect.children[i].classList.remove("selectedCell")
     }
 
     //Render sidebar panel
