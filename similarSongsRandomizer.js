@@ -18,7 +18,7 @@ exports.getFirstRandomSong = function() {
         console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
         console.log("ok, firstSong = " + firstSong)
-        console.log("ok, title = " + firstSong.title)
+            //console.log("ok, title = " + firstSong.title)
 
 
     } while (firstSong == undefined)
@@ -86,9 +86,10 @@ exports.getSimilarKeySong = function(songByKey) {
         console.log("ok, SimKeySong = " + simKeySong)
         nextSong = songsByKey[longAltKeys[nextKeyIndex]][simKeySong]
         console.log("ok, nextSong = " + nextSong)
-        console.log("ok nextKey = " + nextSong.key)
-        console.log("ok, title = " + nextSong.title)
     } while (nextSong == undefined)
+
+    console.log("ok nextKey = " + nextSong.key)
+    console.log("ok, title = " + nextSong.title)
 
     return nextSong
 }
@@ -130,7 +131,7 @@ exports.getRandomSong = function() {
     } while (nextSong == undefined)
 
     //firstSong = songsByKey['F'][1]
-    //console.log(firstSong)
+    console.log(nextSong.key)
 
     return nextSong
 }
