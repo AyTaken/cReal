@@ -864,6 +864,11 @@ function getMask(quality) {
             //Minor 6th 9th
             ris = [0, 3, 7, 11]
             break;
+        case '-^9':
+            //Minor 6th 9th
+            ris = [0, 3, 7, 11, 14]
+            break;
+
 
 
         default:
@@ -917,18 +922,20 @@ exports.getFirstRandomSong = function() {
     let randSong
     do {
         randKey = Math.floor(Math.random() * altKeys.length)
-        //console.log("ok, randkey = " + randKey)
+            //console.log("ok, randkey = " + randKey)
         randSong = Math.floor(Math.random() * songsByKey[altKeys[randKey]].length)
-        //console.log("ok, randSong = " + randSong)
+            //console.log("ok, randSong = " + randSong)
         firstSong = songsByKey[altKeys[randKey]][randSong]
-        //console.log("ok, firstSong = " + firstSong)
-       // console.log("ok, title = " + firstSong.title)
+        console.log("ok, firstSong = " + firstSong)
+            //console.log("ok, title = " + firstSong.title)
+            //console.log("ok, firstSong = " + firstSong)
+            // console.log("ok, title = " + firstSong.title)
 
 
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
-    //console.log(firstSong)
+    //firstSong = songsByKey['C'][1]
+        //console.log(firstSong)
 
     return firstSong
 }
@@ -990,9 +997,10 @@ exports.getSimilarKeySong = function(songByKey) {
         console.log("ok, SimKeySong = " + simKeySong)
         nextSong = songsByKey[longAltKeys[nextKeyIndex]][simKeySong]
         console.log("ok, nextSong = " + nextSong)
-        console.log("ok nextKey = " + nextSong.key)
-        console.log("ok, title = " + nextSong.title)
     } while (nextSong == undefined)
+
+    console.log("ok nextKey = " + nextSong.key)
+    console.log("ok, title = " + nextSong.title)
 
     return nextSong
 }
@@ -1034,7 +1042,7 @@ exports.getRandomSong = function() {
     } while (nextSong == undefined)
 
     //firstSong = songsByKey['F'][1]
-    //console.log(firstSong)
+    console.log(nextSong.key)
 
     return nextSong
 }

@@ -16,6 +16,29 @@ exports.getNotesChord = function (chord) {
 
 }
 
+//TEST
+let test =
+    ['5', '2', 'add9', '+', 'o', 'h', 'sus', '^', '-', '^7', '-7', '7', '7sus', 'h7', 'o7', '^9', '^13', '6', '69', '^7#11', '^9#11', '^7#5', '-6', '-69', '-^7', '-^9', '-9', '-11', '-7b5', 'h9', '-b6', '-#5', '9', '7b9', '7#9', '7#11', '7b5', '7#5', '9#11', '9b5', '9#5', '7b13', '7#9#5', '7#9b5', '7#9#11', '7b9#11', '7b9b5', '7b9#5', '7b9#9', '7b9b13', '7alt', '13', '13#11', '13b9', '13#9', '7b9sus', '7susadd3', '9sus', '13sus', '7b13sus', '11']
+
+for (let i = 0; i < test.length; i++) {
+    console.log(getNotesChord('B' + test[i]))
+}
+function getNotesChord(chord) {
+    //rqi stands for root, quality, inversion: it is an array containing the chord informations
+    let rqi = parse(chord)
+    let mask = getMask(rqi[1])
+
+    //we exploit the enharmonic proprerty of the b/#, reducing the
+    //problem of finding the notes only to the sharp case, we need only to play them
+    if (rqi[0].includes('b'))
+        rqi[0] = chromaSharpNormalization(rqi[0]);
+    if (rqi[2].includes('b'))
+        rqi[2] = chromaSharpNormalization(rqi[2]);
+
+    return notes(rqi[0], mask, rqi[2])
+
+}
+
 function parse(chord) {
     let root
     let quality = []
@@ -104,8 +127,6 @@ function notes(root, mask, inversion) {
 
 
 
-let test =
-    ['5', '2', 'add9', '+', 'o', 'h', 'sus', '^', '-', '^7', '-7', '7', '7sus', 'h7', 'o7', '^9', '^13', '6', '69', '^7#11', '^9#11', '^7#5', '-6', '-69', '-^7', '-^9', '-9', '-11', '-7b5', 'h9', '-b6', '-#5', '9', '7b9', '7#9', '7#11', '7b5', '7#5', '9#11', '9b5', '9#5', '7b13', '7#9#5', '7#9b5', '7#9#11', '7b9#11', '7b9b5', '7b9#5', '7b9#9', '7b9b13', '7alt', '13', '13#11', '13b9', '13#9', '7b9sus', '7susadd3', '9sus', '13sus', '7b13sus', '11']
 
 
 
@@ -213,6 +234,19 @@ function getMask(quality) {
             //Minor 6th 9th
             ris = [0, 3, 7, 11]
             break;
+        case '-^9':
+            //Minor 6th 9th
+            ris = [0, 3, 7, 11, 14]
+            break;
+        case '-9':
+            //Minor 9th
+            ris = [0, 3, 7, 10, 14]
+            break;
+        case '-11':
+            //Minor 11th
+            ris = [0, 3, 7, 10, 14, 17]
+            break;
+
 
 
         default:
