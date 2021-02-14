@@ -78,13 +78,14 @@ exports.diaMod = function(song1, song2) {
 // VI, vii, i, ii#, III, iv, v
 
 exports.pivotChord = function(song_1, song_2) {
-    let chords[]
+    let chords = []
     currentKeyIndex = keys.indexOf(song_1.key)
     nextKeyIndex = keys.indexOf(song_2.key)
     firstChordModulation = currentKeyIndex + 11;
     currentKeyIndex = nextKeyIndex
     secondChordModulation = currentKeyIndex + 11;
     chords = [firstChordModulation, secondChordModulation]
+    return chords
 }
 
 // Enharmonic dominant
@@ -104,14 +105,17 @@ exports.pivotChord = function(song_1, song_2) {
 exports.deceptiveCadence = function(song) {
     currentkey = song.key
     keyIndex = keys.indexOf(currentKey)
-    chord1 = currentKey
-    chord2 = currentKey + 5
-    chord3 = currentKey + 7
-    chord4 = currentKey + 9
-    currentKey = chord4
-    chord5 = currentKey + 3
-    chord6 = currentKey + 7
-    chord7 = currentKey
+    let chords = []
+    chord1 = keys[keyIndex]
+    chord2 = keys[keyIndex + 5]
+    chord3 = keys[keyIndex + 7]
+    chord4 = keys[keyIndex + 9]
+    nextKeyIndex = keys.indexOf(chord4)
+    chord5 = keys[nextKeyIndex + 3]
+    chord6 = keys[nextKeyIndex + 7]
+    chord7 = keys[nextKeyIndex]
+    chords = [chord1, chord2, chord3, chord4, chord5, chord6, chord7]
+    return chords
 }
 
 // Enhamronic dim7
@@ -154,12 +158,15 @@ exports.deceptiveCadence = function(song) {
 //if (Chord.getNotesChord(song1.key).filter(value => Chord.getNotesChord(song2.key).includes(value)) == [])
 
 function directModulation(song1, song2) {
+    let chords = []
     currentKey = song1.key
     keyIndex = keys.indexOf(currentKey)
     nextKey = song2.key
-    chord1 = currentKey + 7
-    currentKey = nextKey
-    chord2 = currentKey + 7
+    nextKeyIndex = keys.indexOf(nextKey)
+    chord1 = keys[keyIndex + 7]
+    chord2 = keys[nextKeyIndex + 7]
+    chords = [chord1, chord2]
+    return chords
 }
 // IV = vii and vicevaersa, two common notes (if Major)
 // II = VI and vicevarsa, two common notes (if minor)  
@@ -170,29 +177,78 @@ function directModulation(song1, song2) {
 // preceduto da un if (song1.key == Mayor && (song2.key == song1.key + 5 || song2.key == song1.key + 11)
 // || song1.key = minor && (song2.key == song1.key + 2 || song2.key == song1.key + 8))
 function tritonModulation(song1, song2) {
+    let chords = []
     currentKey = song1.key
-    tritonKey = currentKey + 6
+    nexyKey = song2.key
+    keyIndex = keys.indexOf(currentKey)
+    tritonKeyIndex = keys.indexOf(currentKey) + 6
+    nextKeyIndex = keys.indexOf(nextKey)
     nextKey = song2.key
-    chord1 = currentKey
-    chord2 = currentKey + 2
-    chord3 = currentKey + 7
-    currentKey = tritonKey
-    chord4 = currentKey + 2
-    chord5 = currentKey + 7
-    currentKey = nextKey
-    chord6 = currentKey + 2
-    chord7 = currentKey + 7
-    chord8 = currentKey
-
+    chord1 = keys[currentKey]
+    chord2 = keys[currentKey + 2]
+    chord3 = keys[currentKey + 7]
+    chord4 = keys[tritonKey + 2]
+    chord5 = keys[tritonKey + 7]
+    chord6 = keys[nextKey + 2]
+    chord7 = keys[nextKey + 7]
+    chord8 = keys[nextKey]
+    chords = [chord1, chord2, chord3, chord4, chord5, chord6, chord7, chord8]
+    return chords
 }
 
-function noChordModulation() {
+exports.noChordModulation = function(song1, song2) {
+    let chords
     n = Math.ceil(Math.random() * 2)
-    if (n == 1)
-        directModulation(song1, song2)
-    else if (n == 2)
-        tritonModulation(song1, song2)
+    if (n == 1) {
+        chords = directModulation(song1, song2)
+    } else if (n == 2) {
+        chords = tritonModulation(song1, song2)
+    }
+    return chords
 }
+
+// Chain modulation I go around the circleof fifths clock or counterclockwise and I do V, V7 in each step
+// till I get to play the next song key tonal
+exports.chainMOdulation = function(song1, song2) {
+    let chords = []
+    firstKey = song1.key
+    firstFifthIndex = cycleF.indexOf(firstKey)
+    secondKey = song2.key
+    secondFifthKey = cycleF.indexOf(secondKey)
+    n = secondFifthIndex - firstFifthIndex
+    if (n > 0) {
+        for (i = 0; i <= n; i + 2) {
+            chord[i] = cycleF[firstFifthIndex + i]
+            if (i != n) {
+                chord[i + 1] = cycleF[firstFifthIndex + i] + '7'
+            }
+        }
+    } else {
+        n = -n
+        for (i = 0; i <= n; i + 2) {
+            chord[i] = cycleF[firstFifthIndex - i]
+            if (i != n) {
+                chord[i + 1] = cycleF[firstFifthIndex - i] + '7'
+            }
+        }
+
+    }
+    return chords
+}
+
+exports.parallelMod = function(song1) {
+    let chords = []
+    key = song1.key
+    keyIndex = keys.indexOf(key)
+    chord1 = key
+    if (chord1.includes("-"))
+        chord2 = chord1.replace("-", "^")
+    else if (chord1.includes("^"))
+        chord2 = chord1.replace("^", "-")
+    chords = [chord1, chord2]
+    return chords
+}
+
 
 
 // || (or)
