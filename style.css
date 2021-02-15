@@ -1,11 +1,32 @@
+* {
+    font-family: 'B612', sans-serif;
+    color: #403A41;
+}
+
+#title {
+    font-size: 22px;
+    color: 	rgba(255, 255, 255, 0.9);
+    z-index: 0;
+}
+
+#ita {
+    font-size: 20px;
+    font-style: italic;
+    color: 	rgba(255, 255, 255, 0.9);
+    z-index: 0;
+}
+
+body{
+    background-color: #373F51;
+}
 .container {
     position: absolute;
-    border-radius: 20px;
+    border-radius: 10px;
     top: 0; right: 0; bottom: 0; left: 0;
     min-width: 900px;
     min-height: 500px;
-    background-color: lightcyan;
-    margin: 10px;
+    background-color: #CCFFFF;
+    margin: 40px;
 }
 
 #sidebar {
@@ -13,7 +34,15 @@
     float: left;
     width: 25%;
     height: 100%;
-    background-color: lightcoral;
+    background-color: #FFCCCC;
+    border-radius: 10px;
+}
+
+.separator {
+    margin: auto;
+    width: 70%;
+    border-top: 1px solid grey;
+    
 }
 
 #mainView {
@@ -21,7 +50,6 @@
     float: right;
     width: 75%;
     height: 100%;
-    background-color: lightgreen;
 }
 
 #chords {
@@ -29,17 +57,34 @@
     display: grid;
     grid-template-columns: 1fr 1fr 1fr 1fr;
     text-align: center;
-    
     width: 100%;
     height: 70%;
-    background-color: lightyellow;
+}
+
+.cell {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+}
+
+
+
+.measure {
+    
+    width: auto;
+    height: 20%;
 }
 
 #harmonicConnect {
     position: relative;;
     width: 100%;
     height: 30%;
-    background-color: lightseagreen;
+    background-color: #008DD5;
+    border-radius: 10px;
 }
 
 #connectChords {
@@ -58,10 +103,15 @@
     justify-content: center;
     width: 100%;
     height: 25%;
+    text-align: center;
 }
 
 #nextSongVis {
     height: 5%;
+}
+
+.btn:hover {
+    color: white;
 }
 
 #playStopButtons{
@@ -82,13 +132,19 @@
 }
 
 #playStopButtons {
-    background-color: lightgrey;
     color: lightsalmon;
 }
 
 #songInfos {
     display: block;
-    background-color: lightskyblue;
+}
+
+#songTitle {
+    color: teal;
+}
+
+#composer {
+    color: teal;
 }
 
 .info {
@@ -99,18 +155,26 @@
 
 
 .selectedCell {
-    background-color: lightsalmon;
+    border-radius: 10px;
+    background-color: #008DD5;
 }
 
 #changeSongSettings {
-    display: block;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+    align-items: center;
+
 }
 
 .songBtn {
-    position: relative;
-    width: auto;
-    margin-left: 10%;
+    width: 90%;
     height: 20%;
+    background-color: white;
+    border-radius: 10px;
+    border: solid black 2px;
+    margin-top: 2px;
 }
 
 .songBtn:hover {
@@ -119,9 +183,6 @@
 
 #tempoSettings {
     display: block;
-    
-   
-    
 }
 
 .setting {

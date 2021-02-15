@@ -403,8 +403,6 @@ let volSlider = document.getElementById("sliderVolume")
 volSlider.onchange = function () {
     sampler.volume.value = volSlider.value
     console.log(sampler.volume.value)
-
-    
 }
 
 

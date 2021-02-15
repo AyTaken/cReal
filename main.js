@@ -404,8 +404,6 @@ let volSlider = document.getElementById("sliderVolume")
 volSlider.onchange = function () {
     sampler.volume.value = volSlider.value
     console.log(sampler.volume.value)
-
-    
 }
 
 
@@ -1923,29 +1921,54 @@ exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectCh
         chords.pop()
     for (let i = 0; i < 24; i++) {
         let temp = subMeasure[i]
-        chords.push(temp)
+        if (temp == undefined) {
+            chords.push([[]])
+        } else {
+            chords.push(temp)
+        }
+        
     }
+
     render()
 }
 
 
 
 function render() {
+    //REMOVE PREVIOUS CHORDS
+    for (let i = 0; i < chordPanel.children.length; i++) { 
+        let idCell = "cell" + i
+        let divMeasures = document.getElementById(idCell)
+        while (divMeasures.firstChild) {
+            divMeasures.removeChild(divMeasures.lastChild);
+        }      
+    }
+
     //Render chords
     for (let i = 0; i < chordPanel.children.length; i++) {
-        chordPanel.children[i].textContent = chords[i]
+        
+        for (let j = 0; j < chords[i].length; j++) {
+            let divMea = document.createElement("div")
+            divMea.classList.add("measure")
+            divMea.textContent = chords[i][j]
+            chordPanel.children[i].appendChild(divMea)
+        }
+
         if (i == currentMeasure)
             chordPanel.children[i].classList.add("selectedCell")
-        else 
+        else
             chordPanel.children[i].classList.remove("selectedCell")
+
     }
+
+
 
     //Render harmonic connect
     for (let i = 0; i < chordPanelConnect.children.length; i++) {
         chordPanelConnect.children[i].textContent = connectChords[i]
         if (i == connectChordsIndex)
             chordPanelConnect.children[i].classList.add("selectedCell")
-        else 
+        else
             chordPanelConnect.children[i].classList.remove("selectedCell")
     }
 
