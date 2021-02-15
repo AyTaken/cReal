@@ -1631,7 +1631,7 @@ function mod(arr, num, index) {
 
 //TEST
 let s1 = { key: "C-" }
-let s2 = { key: "D-" }
+let s2 = { key: "C-" }
 
 console.log(chainModulation(s1,s2))
 function chainModulation(song1, song2) {
@@ -1657,13 +1657,13 @@ function chainModulation(song1, song2) {
     }
     let chords = []
     let firstKey = song1.key
-    let firstFifthIndex = cycleF.indexOf(firstKey)
+    let firstFifthIndex = cycleF.indexOf(firstKey.replace("-", ""))
     let secondKey = song2.key
-    let secondFifthIndex = cycleF.indexOf(secondKey)
+    let secondFifthIndex = cycleF.indexOf(secondKey.replace("-", ""))
     let n = secondFifthIndex - firstFifthIndex
 
+
     if ((firstIsMinor == true && secondIsMinor == true) || (firstIsMinor == false && secondIsMinor == false)) {
-        console.log("QUI")
         if (n > 0) {
             if (n <= 6) {
                 for (let i = 0; i <= n; i++) {
