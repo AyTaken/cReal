@@ -116,3 +116,20 @@
 .songBtn:hover {
     background-color: blanchedalmond;
 }
+
+#tempoSettings {
+    display: block;
+    
+   
+    
+}
+
+.setting {
+    position: relative;
+    display: block;
+    margin-left: 10%;
+    width: auto;
+    height: 50%
+    
+
+}

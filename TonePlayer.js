@@ -396,8 +396,16 @@ const sampler = new Tone.Sampler({
     'G#5': './piano/Gs5.mp3',
     'G#6': './piano/Gs6.mp3',
     //baseUrl: "./piano/",
-}).toDestination();
-sampler.volume.value = -12
+}).chain(new Tone.Reverb(0.1), Tone.Destination);
+
+sampler.volume.value = 0
+let volSlider = document.getElementById("sliderVolume")
+volSlider.onchange = function () {
+    sampler.volume.value = volSlider.value
+    console.log(sampler.volume.value)
+
+    
+}
 
 
 function extractTimeSignature(ts) {

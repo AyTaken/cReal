@@ -52,8 +52,14 @@
                 <div class="songBtn" id="randomKey">Random Key</div>
             </div>
             <div class="sidebarColumn" id="tempoSettings">
-                <input id="sliderTempo" type="range" label="tempo" units="bpm" min="0" max="240" step="1" value="120"> BPM
-                </input>
+                <div class="setting">
+                    <input id="sliderTempo" type="range" label="tempo" units="bpm" min="20" max="240" step="1"
+                        value="120"> BPM</input>
+                </div>
+                <div class="setting">
+                    <input id="sliderVolume" type="range" label="volume" units="db" min="-40" max="20" step="10"
+                        value="0"> Vol</input>
+                </div>
             </div>
 
         </div>
@@ -63,7 +69,7 @@
             </div>
             <div id="harmonicConnect">Harmonic Connect: Smoothness vs boldness
                 <div id="connectChords">
-                    
+
                 </div>
             </div>
 
