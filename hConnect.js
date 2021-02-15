@@ -294,7 +294,6 @@ exports.chainModulation = function(song1, song2) {
                     }
                 }
             }
-
         } else {
             n = -n
             if (n <= 6) {
@@ -313,8 +312,15 @@ exports.chainModulation = function(song1, song2) {
                 }
             }
         }
+        if (firstIsMinor == true && secondIsMinor == true) {
+            for (let i = 0; i <= chords.length; i++) {
+                chords[i].replace("^", "-")
+                chords[i].replace("7", "-7")
+            }
+        }
+
     } else {
-        if (firstIsMinor) {
+        if (firstIsMinor == true) {
             let st1 = {}
             st1.key = firstRelMaj
             chords = deceptiveCadence(st1, true)
@@ -322,42 +328,76 @@ exports.chainModulation = function(song1, song2) {
             firstFifthIndex = cycleF.indexOf(firstKey)
             n = secondFifthIndex - firstFifthIndex
             if (n > 0) {
-                for (let i = 0; i <= n; i++) {
-                    chords.push(mod(cycleF, firstFifthIndex, i) + '^')
-                    if (i != n) {
-                        chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                if (n <= 6) {
+                    for (let i = 0; i <= n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                        }
+                    }
+                } else {
+                    for (let i = 0; i <= cycleF.length - n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                        }
                     }
                 }
             } else {
                 n = -n
-                for (let i = 0; i <= n; i++) {
-                    chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
-                    if (i != n) {
-                        chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                if (n <= 6) {
+                    for (let i = 0; i <= n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                        }
+                    }
+                } else {
+                    for (let i = 0; i <= cycleF.length - n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                        }
                     }
                 }
-
             }
-        } else {
+        } else if (secondIsMinor == true) {
             secondKey = secondRelMaj
-            secondFifthIndex = cycleF.indexOf(firstKey)
+            secondFifthIndex = cycleF.indexOf(secondKey) //perche' qui c'era firstKey??
             n = secondFifthIndex - firstFifthIndex
             if (n > 0) {
-                for (let i = 0; i <= n; i++) {
-                    chords.push(mod(cycleF, firstFifthIndex, i) + '^')
-                    if (i != n) {
-                        chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                if (n <= 6) {
+                    for (let i = 0; i <= n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                        }
+                    }
+                } else {
+                    for (let i = 0; i <= cycleF.length - n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                        }
                     }
                 }
             } else {
                 n = -n
-                for (let i = 0; i <= n; i++) {
-                    chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
-                    if (i != n) {
-                        chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                if (n <= 6) {
+                    for (let i = 0; i <= n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, -i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, -i) + '7')
+                        }
+                    }
+                } else {
+                    for (let i = 0; i <= cycleF.length - n; i++) {
+                        chords.push(mod(cycleF, firstFifthIndex, i) + '^')
+                        if (i != n) {
+                            chords.push(mod(cycleF, firstFifthIndex, i) + '7')
+                        }
                     }
                 }
-
             }
             console.log(chords)
             console.log(secondRelMaj)
