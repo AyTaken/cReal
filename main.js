@@ -528,6 +528,7 @@ stopBtn.onclick = function () {
 
     //RESET CHORD VIEW
     viewedBlock = []
+    lastChordView = -1
 
     for (let i = 0; i < measures.length && i < maxSize; i++) {
         viewedBlock.push(measures[i])
