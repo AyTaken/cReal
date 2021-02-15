@@ -23,6 +23,7 @@ let connectSong = {}
 let partitureConnect
 let partConnect
 let harmonicOn = false
+let playedConnect = false
 
 //Lo stato può essere play, stop, pause 
 let state = "stop"
@@ -195,6 +196,12 @@ function generatePart(targetPartiture, timeSignature) {
         if (currentMeasure != chord.measure && !harmonicOn) {
             currentMeasure = chord.measure
             Controller.setCurrentMeasure(currentMeasure)
+            //First chord after harmonic connect
+            if (chord.firstChord && playedConnect) {
+                Controller.setConnectChords([])
+                connectChordsIndex = -1
+                Controller.setCurrentMeasureConnect(-1)
+            }
         }
         if (harmonicOn) {
             //First chord harmonic connect
@@ -210,7 +217,7 @@ function generatePart(targetPartiture, timeSignature) {
         }
         console.log("TonePlayer: ", currentMeasure, connectChordsIndex)
         if (chord.lastChord) {
-              if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
+            if (!(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)) {
                 if (!harmonicOn) {
                     //Play harmonic Connect chords
                     harmonicOn = true
@@ -224,10 +231,11 @@ function generatePart(targetPartiture, timeSignature) {
                 } else {
                     //Delete currente harmonic connect
                     harmonicOn = false
-                    Controller.setConnectChords([])
+                    playedConnect = true
+                    /*Controller.setConnectChords([])
                     connectChordsIndex = -1
-                    Controller.setCurrentMeasureConnect(-1)
-                    
+                    Controller.setCurrentMeasureConnect(-1)*/
+
                     nextSong = {}
                     connectSong = {}
 
@@ -268,7 +276,7 @@ function stop() {
     Tone.Transport.stop()
     Tone.Transport.cancel(0)
     Controller.setFinalShiftZeroToStop()
-    
+
 
     if (harmonicOn) {
         part = generatePart(partitureConnect, extractTimeSignature(currentSong.music.timeSignature))

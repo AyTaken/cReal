@@ -360,7 +360,7 @@ exports.chainModulation = function (song1, song2) {
 
     }
 
-    let final = chunkArray(chords, 4)
+    let final = chunkArray(chords, 2)
 
 
     return final
