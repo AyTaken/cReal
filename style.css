@@ -1,6 +1,6 @@
 * {
     font-family: 'B612', sans-serif;
-    color: #403A41;
+    color: rgb(37, 37, 37);
 }
 
 #title {
@@ -26,7 +26,7 @@ body{
     top: 0; right: 0; bottom: 0; left: 0;
     min-width: 900px;
     min-height: 500px;
-    background-color: #CCFFFF;
+    background-color: #7EB5D0;
     margin: 40px;
 }
 
@@ -35,7 +35,7 @@ body{
     float: left;
     width: 25%;
     height: 100%;
-    background-color: #FFCCCC;
+    background-color: #E1C57F;
     border-radius: 10px 0px 0px 100px;
 }
 
@@ -67,7 +67,7 @@ body{
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: space-around;
+    justify-content: space-evenly;
     align-items: center;
     width: 100%;
     height: 100%;
@@ -90,7 +90,7 @@ body{
     position: relative;;
     width: 100%;
     height: 30%;
-    background-color: #008DD5;
+    background-color: #9AA8CF;
     border-radius: 0px 0px 10px 0px;
 }
 
@@ -118,7 +118,7 @@ body{
 }
 
 .btn:hover {
-    color: white;
+    color: #98B67F;
 }
 
 #playStopButtons{
@@ -163,7 +163,7 @@ body{
 
 .selectedCell {
     border-radius: 10px;
-    background-color: #FFCCCC;
+    background-color: #9AA8CF;
 }
 
 #changeSongSettings {
@@ -185,7 +185,7 @@ body{
 }
 
 .songBtn:hover {
-    background-color: blanchedalmond;
+    background-color: 98B67F;
 }
 
 #tempoSettings {
@@ -198,4 +198,14 @@ body{
     margin-left: 10%;
     width: auto;
     height: 50%
+}
+
+#lastChord {
+    border-radius: 10px;
+    background-color: lime;
+}
+
+.selectedCellHarm {
+    border-radius: 10px;
+    background-color: #7EB5D0;
 }

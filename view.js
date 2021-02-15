@@ -102,9 +102,9 @@ function render() {
         }
         //chordPanelConnect.children[i].textContent = connectChords[i]
         if (i == connectChordsIndex)
-            chordPanelConnect.children[i].classList.add("selectedCell")
+            chordPanelConnect.children[i].classList.add("selectedCellHarm")
         else
-            chordPanelConnect.children[i].classList.remove("selectedCell")
+            chordPanelConnect.children[i].classList.remove("selectedCellHarm")
     }
 
     //Render sidebar panel
