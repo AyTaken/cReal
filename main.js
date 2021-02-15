@@ -426,6 +426,7 @@ let nextSong
 let currentMeasure = 0
 let connectChords
 let connectChordsIndex = -1
+let lastChordView = 0
 
 exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
@@ -501,7 +502,7 @@ exports.setConnectChords = function (cChords) {
 }
 
 function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex)
+    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex, lastChordView)
 }
 
 
@@ -686,7 +687,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function () {
+/*document.getElementById("onClickSubmit").onclick = function () {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
@@ -739,7 +740,7 @@ document.getElementById("onClickSubmit").onclick = function () {
     nextSong = transposedSong
     setNextSong()
 
-}
+}*/
 
 function mod(arr, num, index) {
     let sum = index + num
@@ -1819,7 +1820,7 @@ exports.getFirstRandomSong = function() {
 
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
+    //firstSong = songsByKey['C'][1]
         //console.log(firstSong)
 
     return firstSong
@@ -1945,6 +1946,7 @@ let chords = []
 let currentMeasure
 let connectChords = []
 let connectChordsIndex
+let lastChord
 
 //Dom elements
 const chordPanel = document.getElementById("chords")
@@ -1961,7 +1963,7 @@ for (let i = 0; i < 24; i++) {
 }
 
 
-exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex) {
+exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex, ls) {
     title = song.title
     composer = song.composer
     style = song.style
@@ -1971,6 +1973,7 @@ exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectCh
     currentMeasure = currentMeas
     connectChords = harmonicConnectChords
     connectChordsIndex = harmonicConnectIndex
+    lastChord = ls
     //Copy all measures
     for (let i = 0; i < 24; i++)
         chords.pop()

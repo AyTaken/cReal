@@ -9,6 +9,7 @@ let chords = []
 let currentMeasure
 let connectChords = []
 let connectChordsIndex
+let lastChord
 
 //Dom elements
 const chordPanel = document.getElementById("chords")
@@ -25,7 +26,7 @@ for (let i = 0; i < 24; i++) {
 }
 
 
-exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex) {
+exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectChords, harmonicConnectIndex, ls) {
     title = song.title
     composer = song.composer
     style = song.style
@@ -35,6 +36,7 @@ exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectCh
     currentMeasure = currentMeas
     connectChords = harmonicConnectChords
     connectChordsIndex = harmonicConnectIndex
+    lastChord = ls
     //Copy all measures
     for (let i = 0; i < 24; i++)
         chords.pop()

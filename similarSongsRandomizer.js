@@ -25,7 +25,7 @@ exports.getFirstRandomSong = function() {
 
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
+    //firstSong = songsByKey['C'][1]
         //console.log(firstSong)
 
     return firstSong

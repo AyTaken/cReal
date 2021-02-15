@@ -6,19 +6,19 @@
 #title {
     margin-left: 0.1%;
     font-size: 22px;
-    color: 	rgba(255, 255, 255, 0.9);
+    color: 	rgb(37, 37, 37);
     z-index: 0;
 }
 
 #ita {
     font-size: 20px;
     font-style: italic;
-    color: 	rgba(255, 255, 255, 0.9);
+    color: 	rgb(37, 37, 37);
     z-index: 0;
 }
 
 body{
-    background-color: #373F51;
+    background-color: #e8f6ff;
 }
 .container {
     position: absolute;
@@ -26,7 +26,7 @@ body{
     top: 0; right: 0; bottom: 0; left: 0;
     min-width: 900px;
     min-height: 500px;
-    background-color: #7EB5D0;
+    background-color: #F28F83;
     margin: 40px;
 }
 
@@ -35,7 +35,7 @@ body{
     float: left;
     width: 25%;
     height: 100%;
-    background-color: #E1C57F;
+    background-color: #FFF29A;
     border-radius: 10px 0px 0px 100px;
 }
 
@@ -90,7 +90,7 @@ body{
     position: relative;;
     width: 100%;
     height: 30%;
-    background-color: #9AA8CF;
+    background-color: #A497C9;
     border-radius: 0px 0px 10px 0px;
 }
 
@@ -118,7 +118,7 @@ body{
 }
 
 .btn:hover {
-    color: #98B67F;
+    color: #75cc70;
 }
 
 #playStopButtons{
@@ -163,7 +163,7 @@ body{
 
 .selectedCell {
     border-radius: 10px;
-    background-color: #9AA8CF;
+    background-color: #A497C9;
 }
 
 #changeSongSettings {
@@ -185,7 +185,7 @@ body{
 }
 
 .songBtn:hover {
-    background-color: 98B67F;
+    background-color: #75cc70;
 }
 
 #tempoSettings {
@@ -207,5 +207,5 @@ body{
 
 .selectedCellHarm {
     border-radius: 10px;
-    background-color: #7EB5D0;
+    background-color: #F28F83;
 }

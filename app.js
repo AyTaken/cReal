@@ -10,6 +10,7 @@ let nextSong
 let currentMeasure = 0
 let connectChords
 let connectChordsIndex = -1
+let lastChordView = 0
 
 exports.setCurrentMeasure = function (measureNum) {
     //Refers to the current played measure by TonePlayer
@@ -85,7 +86,7 @@ exports.setConnectChords = function (cChords) {
 }
 
 function updateView(song, subMeasure) {
-    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex)
+    View.changeState(song, subMeasure, viewIndex, connectChords, connectChordsIndex, lastChordView)
 }
 
 
@@ -270,7 +271,7 @@ function setKeyDropdown() {
     }
 }
 
-document.getElementById("onClickSubmit").onclick = function () {
+/*document.getElementById("onClickSubmit").onclick = function () {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
@@ -323,7 +324,7 @@ document.getElementById("onClickSubmit").onclick = function () {
     nextSong = transposedSong
     setNextSong()
 
-}
+}*/
 
 function mod(arr, num, index) {
     let sum = index + num
