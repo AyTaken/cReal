@@ -40,13 +40,14 @@ function getNotesChord(chord) {
 
 }*/
 
+
 function parse(chord) {
     let root
     let quality = []
     let inversion = []
 
     let point = 1
-    if (chord[1] == 'b' || chord[1] == '#') {
+    if (chord.length > 1 && (chord[1] == 'b' || chord[1] == '#')) {
         root = chord[0] + chord[1]
         point = 2
     }

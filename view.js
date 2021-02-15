@@ -80,6 +80,14 @@ function render() {
         else
             chordPanel.children[i].classList.remove("selectedCell")
 
+        console.log(lastChord)
+        if (i == lastChord)
+            chordPanel.children[i].classList.add("lastChord")
+        else
+            chordPanel.children[i].classList.remove("lastChord")
+
+
+
 
 
     }

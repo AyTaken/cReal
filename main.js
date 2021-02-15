@@ -470,6 +470,7 @@ exports.triggerNextSong = function () {
 
     viewedBlock = []
     viewIndex = 0
+    lastChordView = measures.length - 1
     finalShift = 0
 
     for (let i = 0; i < measures.length && i < maxSize; i++) {
@@ -634,6 +635,7 @@ function setNextSong() {
 const maxSize = 24
 let viewedBlock = []
 let viewIndex = 0
+lastChordView = measures.length - 1
 let finalShift = 0
 for (let i = 0; i < measures.length && i < maxSize; i++) {
     viewedBlock.push(measures[i])
@@ -649,9 +651,16 @@ function scrollSubView() {
     if (measures.length < maxSize)
         return
     viewedBlock[circularMotion(viewIndex, -1, maxSize)] = measures[circularMotion(currentMeasure, maxSize - 1, measures.length)]
+
+    //Impostazione lastCord
+    if (circularMotion(currentMeasure, maxSize - 1, measures.length) == measures.length - 1) {
+        lastChordView = circularMotion(viewIndex, -1, maxSize)
+    }
     if (currentMeasure == measures.length - 1) {
         finalShift = ((currentMeasure % maxSize + 1) + finalShift) % maxSize
     }
+
+
 }
 
 function circularMotion(num, addSocNum, mod) {
@@ -818,13 +827,14 @@ function getNotesChord(chord) {
 
 }*/
 
+
 function parse(chord) {
     let root
     let quality = []
     let inversion = []
 
     let point = 1
-    if (chord[1] == 'b' || chord[1] == '#') {
+    if (chord.length > 1 && (chord[1] == 'b' || chord[1] == '#')) {
         root = chord[0] + chord[1]
         point = 2
     }
@@ -2016,6 +2026,14 @@ function render() {
             chordPanel.children[i].classList.add("selectedCell")
         else
             chordPanel.children[i].classList.remove("selectedCell")
+
+        console.log(lastChord)
+        if (i == lastChord)
+            chordPanel.children[i].classList.add("lastChord")
+        else
+            chordPanel.children[i].classList.remove("lastChord")
+
+
 
 
 

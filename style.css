@@ -200,9 +200,9 @@ body{
     height: 50%
 }
 
-#lastChord {
+.lastChord {
     border-radius: 10px;
-    background-color: lime;
+    background-color: #75cc70;
 }
 
 .selectedCellHarm {
