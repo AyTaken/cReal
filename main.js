@@ -629,15 +629,66 @@ document.getElementById("onClickSubmit").onclick = function () {
     let semitones
     let nextKey = document.getElementById("keys").value
     if (currentSong.key == nextKey) {
-        //console.log("NOP")
+        console.log("NOP")
         return
     } else {
         if (currentSong.key.includes("-")) {
-            semitones = minor.indexOf(value) - minor.indexOf(currentSong.key)
+            semitones = minor.indexOf(nextKey) - minor.indexOf(currentSong.key)
         } else {
-            semitones = noAlt.indexOf(value) - noAlt.indexOf(currentSong.key)
+            semitones = noAlt.indexOf(nextKey) - noAlt.indexOf(currentSong.key)
         }
     }
+
+    console.log(semitones)
+    let chromaFlat = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B']
+    let chromaSharp = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B']
+    let usedChroma = []
+
+    let tempChord = []
+
+    for (let i = 0; i < measures.length; i++) {
+        let tempMea = []
+        for (let j = 0; j < measures[i].length; j++) {
+            tempMea.push(measures[i][j])
+            let root = measures[i][j][0]
+            let hasAlt = false
+            if (measures[i][j][1] == 'b' || measures[i][j][1] == '#') {
+                hasAlt = true
+                root = root + measures[i][j][1]
+            }
+            if (currentSong.key.includes('#')) {
+                usedChroma = chromaSharp
+            } else {
+                usedChroma = chromaFlat
+            }
+
+            let transposed = mod(usedChroma, usedChroma.indexOf(root), semitones)
+            tempMea[j] = tempMea[j].replace(root, transposed)
+        }
+
+        tempChord.push(tempMea)
+
+    }
+
+    let transposedSong = {}
+    Object.assign(transposedSong, currentSong)
+    transposedSong.key = nextKey
+    transposedSong.music.measures = tempChord
+
+    nextSong = transposedSong
+    setNextSong()
+
+}
+
+function mod(arr, num, index) {
+    let sum = index + num
+    if (sum >= arr.length)
+        return arr[sum % arr.length]
+    else if (sum < 0) {
+        sum = sum + arr.length
+        return arr[sum]
+    }
+    return arr[sum]
 }
 
 
@@ -1660,7 +1711,7 @@ exports.getFirstRandomSong = function() {
 
     } while (firstSong == undefined)
 
-    firstSong = songsByKey['C'][1]
+    //firstSong = songsByKey['C'][1]
         //console.log(firstSong)
 
     return firstSong
