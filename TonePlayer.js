@@ -1,7 +1,7 @@
 const Tone = require('tone');
 const Controller = require('./app.js')
 const Chord = require('./chords.js');
-//const HarmonicConnect = require('./hConnect.js')
+const HarmonicConnect = require('./hConnect.js')
 
 //polysynth temporaneo
 const synth = new Tone.PolySynth().toDestination();
@@ -49,7 +49,7 @@ exports.setNextSong = function (song) {
     partitureNextSong = tempPart[0]
     partNextSong = tempPart[1]
     //Generazione accordi harmonic connect
-    let dummyConnect = [['D-7', 'G7'], ['C^7'], ['D-7', 'G7'], ['C^7']]
+    let dummyConnect = HarmonicConnect.chainModulation(currentSong, nextSong)
 
     tempPart = generatePartiture(dummyConnect)
     partitureConnect = tempPart[0]
@@ -190,7 +190,7 @@ function generatePart(targetPartiture, timeSignature) {
     let partTemp = new Tone.Part(((time, chord) => {
         // the notes given as the second element in the array
         // will be passed in as the second argument
-        sampler.triggerAttackRelease(chord.notes, chord.duration, time);
+        sampler.triggerAttackRelease(chord.notes, chord.duration, time, velocity = 0.3);
         console.log("PART CURRENT MEASURE: ", chord.measure)
         if (currentMeasure != chord.measure && !harmonicOn) {
             currentMeasure = chord.measure
@@ -267,6 +267,8 @@ function play() {
 function stop() {
     Tone.Transport.stop()
     Tone.Transport.cancel(0)
+    Controller.setFinalShiftZeroToStop()
+    
 
     if (harmonicOn) {
         part = generatePart(partitureConnect, extractTimeSignature(currentSong.music.timeSignature))

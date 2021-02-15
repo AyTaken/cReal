@@ -17,11 +17,12 @@ exports.getNotesChord = function (chord) {
 }
 
 //TEST
-let test =
+/*let test =
     ['5', '2', 'add9', '+', 'o', 'h', 'sus', '^', '-', '^7', '-7', '7', '7sus', 'h7', 'o7', '^9', '^13', '6', '69', '^7#11', '^9#11', '^7#5', '-6', '-69', '-^7', '-^9', '-9', '-11', '-7b5', 'h9', '-b6', '-#5', '9', '7b9', '7#9', '7#11', '7b5', '7#5', '9#11', '9b5', '9#5', '7b13', '7#9#5', '7#9b5', '7#9#11', '7b9#11', '7b9b5', '7b9#5', '7b9#9', '7b9b13', '7alt', '13', '13#11', '13b9', '13#9', '7b9sus', '7susadd3', '9sus', '13sus', '7b13sus', '11']
 
 for (let i = 0; i < test.length; i++) {
-    console.log(getNotesChord('B' + test[i]))
+    let chord = 'B' + test[i] + '/D'
+    console.log(chord, ":", getNotesChord(chord))
 }
 function getNotesChord(chord) {
     //rqi stands for root, quality, inversion: it is an array containing the chord informations
@@ -37,7 +38,7 @@ function getNotesChord(chord) {
 
     return notes(rqi[0], mask, rqi[2])
 
-}
+}*/
 
 function parse(chord) {
     let root
@@ -90,7 +91,11 @@ function notes(root, mask, inversion) {
 
     //Chord note selection        
     let chordNotes = []
-    let rootIndex = keyboard.indexOf(root + '3');
+    let rootIndex
+    if (root == 'C' || root == 'D' || root == 'E' || root == 'F')
+        rootIndex = keyboard.indexOf(root + '3');
+    else
+        rootIndex = keyboard.indexOf(root + '2');
 
     for (let i = 0; i < mask.length; i++)
         chordNotes.push(keyboard[rootIndex + mask[i]])
@@ -246,17 +251,144 @@ function getMask(quality) {
             //Minor 11th
             ris = [0, 3, 7, 10, 14, 17]
             break;
-
+        case '-7b5':
+            //Minor 7th b5
+            ris = [0, 3, 6, 10]
+            break;
+        case 'h9':
+            //Half-diminished 9th
+            ris = [0, 3, 6, 10, 14]
+            break;
+        case '-b6':
+            //Minor b6
+            ris = [0, 3, 7, 8]
+            break;
+        case '-#5':
+            //Minor #5
+            ris = [0, 3, 7, 8]
+            break;
+        case '9':
+            //Dominant 9th
+            ris = [0, 4, 7, 10, 14]
+            break;
+        case '7b9':
+            //Dominant 7th b9
+            ris = [0, 4, 7, 10, 13]
+            break;
+        case '7#9':
+            //Dominant 7th #9
+            ris = [0, 4, 7, 10, 15]
+            break;
+        case '7#11':
+            //Dominant 7th #11
+            ris = [0, 4, 7, 10, 18]
+            break;
+        case '7b5':
+            //Dominant 7th b5
+            ris = [0, 4, 7, 10, 13]
+            break;
+        case '7#5':
+            //Dominant 7th #5
+            ris = [0, 4, 8, 10]
+            break;
+        case '9#11':
+            //Dominant 9th #11
+            ris = [0, 4, 7, 10, 14, 18]
+            break;
+        case '9b5':
+            //Dominant 9th b5
+            ris = [0, 4, 6, 10, 14]
+            break;
+        case '9#5':
+            //Dominant 9th #5
+            ris = [0, 4, 8, 10, 14]
+            break;
+        case '7b13':
+            //Dominant 7th b13
+            ris = [0, 4, 7, 10, 20]
+            break;
+        case '7#9#5':
+            //Dominant 7th #9 #5
+            ris = [0, 4, 8, 10, 15]
+            break;
+        case '7#9b5':
+            //Dominant 7th #9 b5
+            ris = [0, 4, 6, 10, 15]
+            break;
+        case '7#9#11':
+            //Dominant 7th #9 #11
+            ris = [0, 4, 7, 10, 15, 18]
+            break;
+        case '7b9#11':
+            //Dominant 7th b9 #11
+            ris = [0, 4, 7, 10, 13, 18]
+            break;
+        case '7b9b5':
+            //Dominant 7th b9 b5
+            ris = [0, 4, 6, 10, 13]
+            break;
+        case '7b9#5':
+            //Dominant 7th b9 #5
+            ris = [0, 4, 8, 10, 13]
+            break;
+        case '7b9#9':
+            //Dominant 7th b9 #9
+            ris = [0, 4, 7, 10, 13, 15]
+            break;
+        case '7b9b13':
+            //Dominant 7th b9 b13
+            ris = [0, 4, 7, 10, 13, 20]
+            break;
+        case '7alt':
+            //Dominant 7th with altered extentions as choise
+            ris = [0, 4, 7, 10]
+            break;
+        case '13':
+            //Dominant 13th
+            ris = [0, 4, 7, 10, 14, 21]
+            break;
+        case '13#11':
+            //Dominant 13th #11
+            ris = [0, 4, 7, 10, 14, 18, 21]
+            break;
+        case '13b9':
+            //Dominant 13th b9
+            ris = [0, 4, 7, 10, 13, 21]
+            break;
+        case '13#9':
+            //Dominant 13th #9
+            ris = [0, 4, 7, 10, 15, 21]
+            break;
+        case '7b9sus':
+            //Dominant 7th b9 without third with perfect 4th
+            ris = [0, 5, 7, 10, 13]
+            break;
+        case '7susadd3':
+            //Dominant 7th without third + perfect 4th, major 3rd
+            ris = [0, 4, 5, 7, 10, 13]
+            break;
+        case '9sus':
+            //Dominant 9th no M3 + P4
+            ris = [0, 5, 7, 10, 14]
+            break;
+        case '13sus':
+            //Dominant 13th no M3 + P4 
+            ris = [0, 5, 7, 10, 14, 21]
+            break;
+        case '7b13sus':
+            //Dominant 7th b13 no M3 + P4
+            ris = [0, 5, 7, 10, 20]
+            break;
+        case '11':
+            //Dominant 11th
+            ris = [0, 4, 7, 10, 14, 17]
+            break;
 
 
         default:
             //Dominant 7th
             ris = [0, 4, 7, 10]
             break;
-
-
-
-
     }
 
     return ris;

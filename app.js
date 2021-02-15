@@ -28,6 +28,10 @@ exports.setCurrentMeasureConnect = function (measureNum) {
     updateView(currentSong, viewedBlock)
 }
 
+exports.setFinalShiftZeroToStop = function () {
+    finalShift = 0
+}
+
 const chordPanel = document.getElementById("chords")
 
 exports.triggerNextSong = function () {
