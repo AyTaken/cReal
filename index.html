@@ -15,7 +15,7 @@
     <div id="title">cReal - a <span id="ita">continuous</span> real book</div>
     <div class="container">
         <div id="sidebar">
-            <div class="sidebarColumn" id="nextSongVis">Prossima canzone ...</div>
+            <div class="sidebarColumn" id="nextSongVis">Next song ...</div>
             <div class="sidebarColumn" id="playStopButtons">
                 <div id="stop" class="btn fas fa-stop fa-4x"></div>
                 <div id="play" class="btn fas fa-play fa-4x"></div>
@@ -29,7 +29,7 @@
                 <div class="info" id="composer"></div>
                 <div class="info" id="styleAndKey"></div>
             </div>
-            <div class="separator"></div>
+            
             <div class="sidebarColumn" id="changeSongSettings">
 
                 
@@ -37,7 +37,7 @@
                 <div class="songBtn" id="sameKey">Same Key</div>
                 <div class="songBtn" id="similarKey">Similar Key</div>
                 <div class="songBtn" id="randomKey">Random Key</div>
-                <div class="songBtn" id="changeKey">
+                <div class="" id="">Keys:
                     <label id="labelKey" for="keys"></label>
                     <select id="keys">
                         <option id="opt1" value=""></option>
@@ -53,11 +53,12 @@
                         <option id="opt11" value=""></option>
                         <option id="opt12" value=""></option>
                     </select>
-                    <button type="submit" id="onClickSubmit">cambia</button>
+                    <!--button type="submit" id="onClickSubmit">cambia</button-->
                 </div>
+                <div class="songBtn" id="changeKey">Change Key</div>
                 <div class="songBtn" id="targetKey">Target Key</div>
             </div>
-            <div class="separator"></div>
+            
             <div class="sidebarColumn" id="tempoSettings">
                 <div class="setting">
                     <input id="sliderTempo" type="range" label="tempo" units="bpm" min="20" max="240" step="1"
@@ -74,7 +75,7 @@
             <div id="chords">
 
             </div>
-            <div id="harmonicConnect">....Harmonic Connect: Smoothness vs boldness
+            <div id="harmonicConnect"> Harmonic Connect
                 <div id="connectChords">
 
                 </div>

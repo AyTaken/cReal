@@ -45,7 +45,7 @@ exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectCh
         } else {
             chords.push(temp)
         }
-        
+
     }
 
     render()
@@ -55,17 +55,17 @@ exports.changeState = function (song, subMeasure, currentMeas, harmonicConnectCh
 
 function render() {
     //REMOVE PREVIOUS CHORDS
-    for (let i = 0; i < chordPanel.children.length; i++) { 
+    for (let i = 0; i < chordPanel.children.length; i++) {
         let idCell = "cell" + i
         let divMeasures = document.getElementById(idCell)
         while (divMeasures.firstChild) {
             divMeasures.removeChild(divMeasures.lastChild);
-        }      
+        }
     }
 
     //Render chords
     for (let i = 0; i < chordPanel.children.length; i++) {
-        
+
         for (let j = 0; j < chords[i].length; j++) {
             let divMea = document.createElement("div")
             divMea.classList.add("measure")
@@ -78,13 +78,29 @@ function render() {
         else
             chordPanel.children[i].classList.remove("selectedCell")
 
+
+
     }
 
 
+    //REMOVE PREVIOUS CHORDS
+    for (let i = 0; i < chordPanelConnect.children.length; i++) {
+        let idCell = "cellHarmonic" + i
+        let divMeasures = document.getElementById(idCell)
+        while (divMeasures.firstChild) {
+            divMeasures.removeChild(divMeasures.lastChild);
+        }
+    }
 
     //Render harmonic connect
     for (let i = 0; i < chordPanelConnect.children.length; i++) {
-        chordPanelConnect.children[i].textContent = connectChords[i]
+        for (let j = 0; j < connectChords[i].length; j++) {
+            let divMea = document.createElement("div")
+            divMea.classList.add("measure")
+            divMea.textContent = connectChords[i][j]
+            chordPanelConnect.children[i].appendChild(divMea)
+        }
+        //chordPanelConnect.children[i].textContent = connectChords[i]
         if (i == connectChordsIndex)
             chordPanelConnect.children[i].classList.add("selectedCell")
         else
