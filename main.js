@@ -420,6 +420,7 @@ const View = require('./view.js');
 
 const noAlt = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"]
 const minor = ["A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
+const allPosKeys = ["C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B", "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"]
 
 let currentSong
 let nextSong
@@ -683,7 +684,13 @@ function setKeyDropdown() {
 
     let dropdown = document.getElementById("keys")
 
-    if (currentSong.key.includes("-")) {
+    for (let i = 0; i < dropdown.children.length; i++) {
+        dropdown.children[i].textContent = allPosKeys[i]
+        dropdown.children[i].value = allPosKeys[i]
+    }
+    
+
+    /*if (currentSong.key.includes("-")) {
         for (let i = 0; i < dropdown.children.length; i++) {
             dropdown.children[i].textContent = minor[i]
             dropdown.children[i].value = minor[i]
@@ -694,7 +701,7 @@ function setKeyDropdown() {
             dropdown.children[i].textContent = noAlt[i]
             dropdown.children[i].value = noAlt[i]
         }
-    }
+    }*/
 }
 
 /*document.getElementById("onClickSubmit").onclick = function () {
