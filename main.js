@@ -1192,7 +1192,7 @@ function getMask(quality) {
     "A-", "E-", "B-", "Gb-", "Db-", "Ab-", "Eb-", "Bb-", "F-", "C-", "G-", "D-",
     "A-", "E-", "B-", "Gb-", "Db-", "Ab-", "Eb-", "Bb-", "F-", "C-", "G-", "D-"
 ]*/
-const cycleF = ["C", "G", "D", "A", "E", "B", "Gb", "Db", "Ab", "Eb", "Bb", "F", ]
+const cycleF = ["C", "G", "D", "A", "E", "B", "Gb", "Db", "Ab", "Eb", "Bb", "F",]
 
 const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
     'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
@@ -1200,15 +1200,15 @@ const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
     "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"
 ]
 const modes = ["M", "m", "m", "M", "M", "m", "dim"]
-    // There are 4 comon chords for two keys next to each other, if I jump one key, only two are in common
-    // (1) first, third, 4th, fifth, (2) third, fifth
-    // Pre dom IV & ii (ii is the relative minor in the next key!)
-    // I start the modulation in the two chord, because it becomes the relative minor in the new key
-    // Pre dom are the common chords for modulation
+// There are 4 comon chords for two keys next to each other, if I jump one key, only two are in common
+// (1) first, third, 4th, fifth, (2) third, fifth
+// Pre dom IV & ii (ii is the relative minor in the next key!)
+// I start the modulation in the two chord, because it becomes the relative minor in the new key
+// Pre dom are the common chords for modulation
 
 // Scheletro diatonic (common chord) modulation
 
-exports.diaMod = function(song1, song2) {
+exports.diaMod = function (song1, song2) {
     currentFifthIndex = cycleF.indexOf(song1.key)
     currentKeyIndex = keys.indexOf(song1.key)
     n1 = cycleF.indexOf(song1.key)
@@ -1264,7 +1264,7 @@ exports.diaMod = function(song1, song2) {
 // I, II, iii, IV, V, vi, vii dim
 // VI, vii, i, ii#, III, iv, v
 
-exports.pivotChord = function(song_1, song_2) {
+exports.pivotChord = function (song_1, song_2) {
     let chords = []
     currentKeyIndex = keys.indexOf(song_1.key)
     nextKeyIndex = keys.indexOf(song_2.key)
@@ -1419,7 +1419,7 @@ function tritonModulation(song1, song2) {
     return chords
 }
 
-exports.noChordModulation = function(song1, song2) {
+exports.noChordModulation = function (song1, song2) {
     let chords
     n = Math.ceil(Math.random() * 2)
     if (n == 1) {
@@ -1432,7 +1432,7 @@ exports.noChordModulation = function(song1, song2) {
 
 // Chain modulation I go around the circleof fifths clock or counterclockwise and I do V, V7 in each step
 // till I get to play the next song key tonal
-exports.chainModulation = function(song1, song2) {
+exports.chainModulation = function (song1, song2) {
     let firstIsMinor = false
     let secondIsMinor = false
     let firstRelMaj
@@ -1455,10 +1455,11 @@ exports.chainModulation = function(song1, song2) {
     }
     let chords = []
     let firstKey = song1.key
-    let firstFifthIndex = cycleF.indexOf(firstKey)
+    let firstFifthIndex = cycleF.indexOf(firstKey.replace("-", ""))
     let secondKey = song2.key
-    let secondFifthIndex = cycleF.indexOf(secondKey)
+    let secondFifthIndex = cycleF.indexOf(secondKey.replace("-", ""))
     let n = secondFifthIndex - firstFifthIndex
+
 
     if ((firstIsMinor == true && secondIsMinor == true) || (firstIsMinor == false && secondIsMinor == false)) {
         if (n > 0) {
@@ -1496,7 +1497,7 @@ exports.chainModulation = function(song1, song2) {
             }
         }
         if (firstIsMinor == true && secondIsMinor == true) {
-            for (let i = 0; i <= chords.length; i++) {
+            for (let i = 0; i < chords.length; i++) {
                 chords[i] = chords[i].replace("^", "-")
                 chords[i] = chords[i].replace("7", "-7")
             }
@@ -1594,6 +1595,8 @@ exports.chainModulation = function(song1, song2) {
     }
     let final = chunkArray(chords, 2)
     return final
+
+
 }
 
 //TEST
@@ -1633,8 +1636,8 @@ function mod(arr, num, index) {
 let s1 = { key: "C-" }
 let s2 = { key: "C-" }
 
-console.log(chainModulation(s1,s2))
-function chainModulation(song1, song2) {
+//console.log(chainModulation(s1,s2))
+/* function chainModulation(song1, song2) {
     let firstIsMinor = false
     let secondIsMinor = false
     let firstRelMaj
@@ -1799,7 +1802,7 @@ function chainModulation(song1, song2) {
     return final
     
 }
-
+ */
 function chunkArray(myArray, chunk_size) {
     var index = 0;
     var arrayLength = myArray.length;
@@ -1814,7 +1817,7 @@ function chunkArray(myArray, chunk_size) {
     return tempArray;
 }
 
-exports.parallelMod = function(song1) {
+exports.parallelMod = function (song1) {
     let chords = []
     key = song1.key
     keyIndex = keys.indexOf(key)
