@@ -2,6 +2,7 @@ const Tone = require('tone');
 const Controller = require('./app.js')
 const Chord = require('./chords.js');
 const HarmonicConnect = require('./hConnect.js')
+const Connect = require('./connect.js')
 
 //polysynth temporaneo
 const synth = new Tone.PolySynth().toDestination();
@@ -50,7 +51,9 @@ exports.setNextSong = function (song) {
     partitureNextSong = tempPart[0]
     partNextSong = tempPart[1]
     //Generazione accordi harmonic connect
-    let dummyConnect = HarmonicConnect.chainModulation(currentSong, nextSong)
+    let dummyConnect = Connect.connect(currentSong, nextSong)
+    //TO BE REMOVED
+    dummyConnect = HarmonicConnect.chainModulation(currentSong, nextSong) //lascio per non rompere la build
 
     tempPart = generatePartiture(dummyConnect)
     partitureConnect = tempPart[0]

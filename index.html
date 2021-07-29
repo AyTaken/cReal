@@ -29,11 +29,11 @@
                 <div class="info" id="composer"></div>
                 <div class="info" id="styleAndKey"></div>
             </div>
-            
+
             <div class="sidebarColumn" id="changeSongSettings">
 
-                
-                
+
+
                 <div class="songBtn" id="sameKey">Same Key</div>
                 <div class="songBtn" id="similarKey">Similar Key</div>
                 <div class="songBtn" id="randomKey">Random Key</div>
@@ -70,7 +70,7 @@
                 <div class="songBtn" id="changeKey">Change Key</div>
                 <div class="songBtn" id="targetKey">Target Key</div>
             </div>
-            
+
             <div class="sidebarColumn" id="tempoSettings">
                 <div class="setting">
                     <input id="sliderTempo" type="range" label="tempo" units="bpm" min="20" max="240" step="1"
@@ -87,7 +87,14 @@
             <div id="chords">
 
             </div>
-            <div id="harmonicConnect"> Harmonic Connect
+            <div id="harmonicConnect"> <span>Harmonic Connect</span> 
+                <div id="connectRadio">
+                    <input type="radio" id="harmonicChoice1" name="harmonic" value="bold" checked>
+                    <label for="harmonicChoice1">Bold</label>
+
+                    <input type="radio" id="harmonicChoice2" name="harmonic" value="smooth">
+                    <label for="harmonicChoice2">Smooth</label>
+                </div>
                 <div id="connectChords">
 
                 </div>

@@ -209,3 +209,7 @@ body{
     border-radius: 10px;
     background-color: #F28F83;
 }
+
+#connectRadio {
+    float: right;
+}
