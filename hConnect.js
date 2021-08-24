@@ -7,7 +7,7 @@
     "A-", "E-", "B-", "Gb-", "Db-", "Ab-", "Eb-", "Bb-", "F-", "C-", "G-", "D-",
     "A-", "E-", "B-", "Gb-", "Db-", "Ab-", "Eb-", "Bb-", "F-", "C-", "G-", "D-"
 ]*/
-const cycleF = ["C", "G", "D", "A", "E", "B", "Gb", "Db", "Ab", "Eb", "Bb", "F",]
+const cycleF = ["C", "G", "D", "A", "E", "B", "Gb", "Db", "Ab", "Eb", "Bb", "F", ]
 
 const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
     'C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
@@ -15,15 +15,15 @@ const keys = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B',
     "A-", "Bb-", "B-", "C-", "C#-", "D-", "Eb-", "E-", "F-", "F#-", "G-", "G#-"
 ]
 const modes = ["M", "m", "m", "M", "M", "m", "dim"]
-// There are 4 comon chords for two keys next to each other, if I jump one key, only two are in common
-// (1) first, third, 4th, fifth, (2) third, fifth
-// Pre dom IV & ii (ii is the relative minor in the next key!)
-// I start the modulation in the two chord, because it becomes the relative minor in the new key
-// Pre dom are the common chords for modulation
+    // There are 4 comon chords for two keys next to each other, if I jump one key, only two are in common
+    // (1) first, third, 4th, fifth, (2) third, fifth
+    // Pre dom IV & ii (ii is the relative minor in the next key!)
+    // I start the modulation in the two chord, because it becomes the relative minor in the new key
+    // Pre dom are the common chords for modulation
 
 // Scheletro diatonic (common chord) modulation
 
-exports.diaMod = function (song1, song2) {
+exports.diaMod = function(song1, song2) {
     currentFifthIndex = cycleF.indexOf(song1.key)
     currentKeyIndex = keys.indexOf(song1.key)
     n1 = cycleF.indexOf(song1.key)
@@ -73,20 +73,20 @@ exports.diaMod = function (song1, song2) {
 
 // Chormatic Pivot CHORD
 // From C to E minor
-// Chromatic pivot chord is a chod not contained in the first key
+// Chromatic pivot chord is a chord not contained in the first key
 // I vii vii (next chord) i
 
 // I, II, iii, IV, V, vi, vii dim
 // VI, vii, i, ii#, III, iv, v
 
-exports.pivotChord = function (song_1, song_2) {
+exports.pivotChord = function(song_1, song_2) {
     let chords = []
     currentKeyIndex = keys.indexOf(song_1.key)
     nextKeyIndex = keys.indexOf(song_2.key)
-    firstChordModulation = currentKeyIndex + 11;
+    firstChordModulation = keys[currentKeyIndex + 11];
     currentKeyIndex = nextKeyIndex
-    secondChordModulation = currentKeyIndex + 11;
-    chords = [firstChordModulation, secondChordModulation]
+    secondChordModulation = keys[currentKeyIndex + 11];
+    chords = [firstChordModulation, secondChordModulation + '7']
     return chords
 }
 
@@ -95,10 +95,27 @@ exports.pivotChord = function (song_1, song_2) {
 // I just need this chord as modulation
 // it should work only in the case that I'm changin of half-step (is that what sarti asked?)
 
+// we re-spell an augmented sixth as a dominanth 7th and use that as a five chord to cadence to one chord.
+//typically augmented sith resolve to 1-6-4 chord
 
+exports.enharmonicDominant = function(song_1, song_2) {
+    let chords = []
+    currentKeyIndex = keys.indexOf(song_1.key)
+    nextKeyIndex = keys.indexOf(song_2.key)
+    firstChordModulation = keys[currentKeyIndex + 9]
+        //secondChordModulation = keys[currentKeyIndex + 11]
+    secondChordModulation = keys[currentKeyIndex + 8]
+    currentKeyIndex = nextKeyIndex
+    secondChordModulation = keys[currentKeyIndex + 11]
+    chords = [firstChordModulation + '+', secondChordModulation + '7', ]
+    return chords
+
+}
 
 
 //console.log(deceptiveCadence(s1))
+
+// dominant chord goes to the sith chord
 
 function deceptiveCadence(song, isMinor = false) {
     let currentKey = song.key
@@ -160,7 +177,21 @@ function deceptiveCadence(song, isMinor = false) {
 // Major I, V, vii, I, then I go to relative minor vii dim, i (nexy key relative minor)
 
 
+exports.enharmonicDimSeven = function(song_1, song_2) {
+    let chords = []
+    currentKeyIndex = keys.indexOf(song_1.key)
+    nextKeyIndex = keys.indexOf(song_2.key)
+    let firstChordModulation = keys[currentKeyIndex]
+    let secondChordModulation = keys[currentKeyIndex + 7]
+    let thirdChordModulation = keys[currentKeyIndex + 11] + 'o7'
+        // now I'm in relative minor
+    currentKeyIndex = nextKeyIndex
+    let chord_4 = keys[currentKeyIndex + 11] + 'o7'
 
+    chords = [firstChordModulation, secondChordModulation, thirdChordModulation, firstChordModulation, chord_4]
+
+    return chords
+}
 
 
 // dim7 to Dom7
@@ -168,13 +199,26 @@ function deceptiveCadence(song, isMinor = false) {
 // from Cmin to Eb: i, iv, i, vii (dim), V, I.
 // In Bdim chord if I go down halfstep on the root (B) I gat Bb chord (a V) of the next key
 
+// metterei un bel if nextKeyIndex - currentKeyIndex = 3
 
+exports.dimSevenDomSeven = function(song_1, song_2) {
+    let chords = []
+    currentKeyIndex = keys.indexOf(song_1.key)
+    nextKeyIndex = keys.indexOf(song_2.key)
+    let chord_1 = keys[currentKeyIndex]
+    let chord_2 = keys[curentKeyIndex + 5]
+    let chord_3 = keys[currentKeyIndex + 11] + 'dim'
+    currentKeyIndex = nextKeyIndex
+    let chord_4 = keys[currentKeyIndex + 7]
+
+    return chords
+}
 
 
 
 // Chromatic Mediant
 // Mediant = iii, Submediant = vi (in Major)
-// Mediant = III, Submediant = VI
+// Mediant = III, Submediant = VI (in Minor)
 // I think there is no use for harmonic connect 
 // Maybe I can use it to change from a I to iii or vi
 
@@ -234,7 +278,11 @@ function tritonModulation(song1, song2) {
     return chords
 }
 
-exports.noChordModulation = function (song1, song2) {
+// la noChordModulation means that there are no chord in commono between the two keys, which means that
+// there are at least three stepes in the cycle of fiths.
+// So also here I would put something like if abs(song_1.key - song_2.key) ≥ 3
+
+exports.noChordModulation = function(song1, song2) {
     let chords
     n = Math.ceil(Math.random() * 2)
     if (n == 1) {
@@ -247,7 +295,7 @@ exports.noChordModulation = function (song1, song2) {
 
 // Chain modulation I go around the circleof fifths clock or counterclockwise and I do V, V7 in each step
 // till I get to play the next song key tonal
-exports.chainModulation = function (song1, song2) {
+exports.chainModulation = function(song1, song2) {
     let firstIsMinor = false
     let secondIsMinor = false
     let firstRelMaj
@@ -632,7 +680,7 @@ function chunkArray(myArray, chunk_size) {
     return tempArray;
 }
 
-exports.parallelMod = function (song1) {
+exports.parallelMod = function(song1) {
     let chords = []
     key = song1.key
     keyIndex = keys.indexOf(key)
