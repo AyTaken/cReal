@@ -104,7 +104,7 @@ exports.enharmonicDominant = function(song_1, song_2) {
     nextKeyIndex = keys.indexOf(song_2.key)
     firstChordModulation = keys[currentKeyIndex + 9]
         //secondChordModulation = keys[currentKeyIndex + 11]
-    secondChordModulation = keys[currentKeyIndex + 8]
+        //secondChordModulation = keys[currentKeyIndex + 8]
     currentKeyIndex = nextKeyIndex
     secondChordModulation = keys[currentKeyIndex + 11]
     chords = [firstChordModulation + '+', secondChordModulation + '7', ]
@@ -209,7 +209,9 @@ exports.dimSevenDomSeven = function(song_1, song_2) {
     let chord_2 = keys[curentKeyIndex + 5]
     let chord_3 = keys[currentKeyIndex + 11] + 'dim'
     currentKeyIndex = nextKeyIndex
-    let chord_4 = keys[currentKeyIndex + 7]
+    let chord_4 = keys[currentKeyIndex + 7] + '7'
+
+    chords = [chord_1, chord_2, chord_3, chord_4]
 
     return chords
 }
