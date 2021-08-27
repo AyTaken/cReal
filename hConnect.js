@@ -655,8 +655,8 @@ exports.chainModulation = function (song1, song2) {
       }
     }
   }
-  //let final = chunkArray(chords, 2);
-  return { chords: chords, maxJump: dist, name: 'chain modulation' };
+  let final = chords.slice();
+  return { chords: final, maxJump: dist, name: 'chain modulation' };
 };
 
 //TEST

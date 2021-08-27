@@ -23,16 +23,12 @@ exports.connect = function (song1, song2) {
   let ratios = doableMods.map((mod) => mod.maxJump / mod.chords.length);
 
   let maxNorm = Math.max(...ratios);
-  console.log(maxNorm);
-  console.log(boldSmoothValue);
   let ratiosNorm;
   if (maxNorm != 0) ratiosNorm = ratios.map((ratio) => ratio / maxNorm);
   else {
     ratiosNorm = ratios.map((ratio) => ratio);
   }
-  console.log(ratiosNorm);
   let distances = ratiosNorm.map((ratio) => Math.abs(ratio - boldSmoothValue));
-  console.log(distances);
   let minIndex = distances.indexOf(Math.min(...distances));
   let harmonicConnectChords = [];
   doableMods[minIndex].chords.forEach((chord) => {
