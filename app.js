@@ -54,7 +54,7 @@ let lastChordView = 0;
 exports.setCurrentMeasure = function (measureNum) {
   //Refers to the current played measure by TonePlayer
   currentMeasure = measureNum;
-  console.log('App.js: ', currentMeasure, connectChordsIndex);
+  //console.log('App.js: ', currentMeasure, connectChordsIndex);
   scrollSubView();
   //Change nella view la misura illuminata
   updateView(currentSong, viewedBlock);

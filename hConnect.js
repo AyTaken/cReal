@@ -86,7 +86,7 @@ exports.diaMod = function (song1, song2) {
   currentKeyIndex = keys.indexOf(song1.key);
   n1 = cycleF.indexOf(song1.key);
   n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
@@ -148,10 +148,31 @@ exports.diaMod = function (song1, song2) {
     ];
   }
 
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'diatonic modulation' };
 };
 
-function cofDist(index1, index2) {
+function cofDist(key1, key2) {
+  let index1;
+  let index2;
+
+  if (key1.includes('-')) {
+    let keyTemp1 = key1.slice(0, -1);
+    index1 = cycleF.indexOf(keyTemp1.toString());
+    index1 -= 3;
+    if (index1 < 0) index1 += 12;
+  } else {
+    index1 = cycleF.indexOf(key1);
+  }
+
+  if (key2.includes('-')) {
+    let keyTemp2 = key2.slice(0, -1);
+    index2 = cycleF.indexOf(keyTemp2);
+    index2 -= 3;
+    if (index2 < 0) index2 += 12;
+  } else {
+    index2 = cycleF.indexOf(key2);
+  }
+
   let ris = Math.abs(index1 - index2);
   if (ris > 6) ris = 12 - ris;
 
@@ -171,15 +192,19 @@ exports.pivotChord = function (song1, song2) {
 
   n1 = cycleF.indexOf(song1.key);
   n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
+
+  if (song1.key.includes('-') || !song2.key.includes('-')) {
+    return { chords: chords, maxJump: 100 };
+  }
 
   currentKeyIndex = keys.indexOf(song1.key);
   nextKeyIndex = keys.indexOf(song2.key);
   firstChordModulation = keys[currentKeyIndex + 11];
   currentKeyIndex = nextKeyIndex;
   secondChordModulation = keys[currentKeyIndex + 11];
-  chords = [firstChordModulation + '-6', secondChordModulation + 'o7'];
-  return { chords: chords, maxJump: 1.5 };
+  chords = [firstChordModulation + 'o', secondChordModulation + 'o7'];
+  return { chords: chords, maxJump: 1.5, name: 'chromatic pivot chord' };
 };
 
 // Enharmonic dominant
@@ -191,9 +216,7 @@ exports.pivotChord = function (song1, song2) {
 //typically augmented sith resolve to 1-6-4 chord
 
 exports.enharmonicDominant = function (song1, song2) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
@@ -209,23 +232,21 @@ exports.enharmonicDominant = function (song1, song2) {
   currentKeyIndex = nextKeyIndex;
   secondChordModulation = keys[currentKeyIndex + 7]; // +7?
   chords = [firstChordModulation + '+', secondChordModulation + '7'];
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'enharmonic dominant' };
 };
 
 //console.log(deceptiveCadence(s1))
 
 // dominant chord goes to the sith chord
 
-function deceptiveCadence(song1, song2, isMinor = false) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+exports.deceptiveCadenceEx = function (song1, song2, isMinor = false) {
+  n = cofDist(song1.key, song2.key);
 
   if (n >= 3 || song1.key.includes('-') || song2.key.includes('-')) {
     return { chords: [], maxJump: 100 };
   }
 
-  let currentKey = song.key;
+  let currentKey = song1.key;
   let keyIndex = keys.indexOf(currentKey);
   let chords = [];
   let chord1 = keys[keyIndex] + '^';
@@ -243,7 +264,35 @@ function deceptiveCadence(song1, song2, isMinor = false) {
   } else {
     chords = [chord1, chord2, chord3, chord4, chord5, chord6, chord7];
   }
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'deceptive cadence' };
+};
+
+function deceptiveCadence(song1, song2, isMinor = false) {
+  n = cofDist(song1.key, song2.key);
+
+  if (n >= 3 || song1.key.includes('-') || song2.key.includes('-')) {
+    return { chords: [], maxJump: 100 };
+  }
+
+  let currentKey = song1.key;
+  let keyIndex = keys.indexOf(currentKey);
+  let chords = [];
+  let chord1 = keys[keyIndex] + '^';
+  let chord2 = keys[keyIndex + 5] + '^';
+  let chord3 = keys[keyIndex + 7] + '7';
+  let chord4 = keys[keyIndex + 9];
+  let nextKeyIndex = keys.indexOf(chord4);
+  chord4 = keys[keyIndex + 9] + '-'; //or -7?
+  let chord5 = keys[nextKeyIndex + 3] + '-7b5';
+  let chord6 = keys[nextKeyIndex + 7] + '7b9';
+  let chord7 = keys[nextKeyIndex] + '-'; //or -7?
+
+  if (isMinor) {
+    chords = [chord4, chord5, chord6, chord7, chord1, chord2, chord3];
+  } else {
+    chords = [chord1, chord2, chord3, chord4, chord5, chord6, chord7];
+  }
+  return { chords: chords, maxJump: n, name: 'deceptive cadence' };
 }
 
 // Deceptive Cadence
@@ -284,9 +333,7 @@ function deceptiveCadence(song1, song2, isMinor = false) {
 // Major I, V, vii, I, then I go to relative minor vii dim, i (nexy key relative minor)
 
 exports.enharmonicDimSeven = function (song1, song2) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
@@ -312,7 +359,7 @@ exports.enharmonicDimSeven = function (song1, song2) {
     chord_4,
   ];
 
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'enharmonic Dim7' };
 };
 
 // dim7 to Dom7
@@ -323,9 +370,7 @@ exports.enharmonicDimSeven = function (song1, song2) {
 // metterei un bel if nextKeyIndex - currentKeyIndex = 3
 
 exports.dimSevenDomSeven = function (song1, song2) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
@@ -343,7 +388,7 @@ exports.dimSevenDomSeven = function (song1, song2) {
 
   chords = [chord_1, chord_2, chord_3, chord_4];
 
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'dim7 7' };
 };
 
 // Chromatic Mediant
@@ -365,11 +410,11 @@ exports.dimSevenDomSeven = function (song1, song2) {
 function directModulation(song1, song2) {
   n1 = cycleF.indexOf(song1.key);
   n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
-  if (n < 3 || song1.key.includes('-') || song2.key.includes('-')) {
+  if (song1.key.includes('-') || song2.key.includes('-')) {
     return { chords: [], maxJump: 100 };
   }
 
@@ -380,7 +425,7 @@ function directModulation(song1, song2) {
   chord1 = keys[keyIndex + 7];
   chord2 = keys[nextKeyIndex + 7];
   chords = [chord1, chord2];
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'direct modulation' };
 }
 // IV = vii and vicevaersa, two common notes (if Major)
 // II = VI and vicevarsa, two common notes (if minor)
@@ -391,9 +436,7 @@ function directModulation(song1, song2) {
 // preceduto da un if (song1.key == Mayor && (song2.key == song1.key + 5 || song2.key == song1.key + 11)
 // || song1.key = minor && (song2.key == song1.key + 2 || song2.key == song1.key + 8))
 function tritonModulation(song1, song2) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
@@ -405,9 +448,9 @@ function tritonModulation(song1, song2) {
   }
 
   currentKey = song1.key;
-  nexyKey = song2.key;
+  nextKey = song2.key;
   keyIndex = keys.indexOf(currentKey);
-  tritonKeyIndex = keys.indexOf(currentKey) + 6;
+  tritonKey = keys.indexOf(currentKey) + 6;
   nextKeyIndex = keys.indexOf(nextKey);
   nextKey = song2.key;
   chord1 = keys[currentKey];
@@ -419,7 +462,7 @@ function tritonModulation(song1, song2) {
   chord7 = keys[nextKey + 7];
   chord8 = keys[nextKey];
   chords = [chord1, chord2, chord3, chord4, chord5, chord6, chord7, chord8];
-  return { chords: chords, maxJump: n };
+  return { chords: chords, maxJump: n, name: 'tritonModulation' };
 }
 
 // la noChordModulation means that there are no chord in commono between the two keys, which means that
@@ -427,7 +470,14 @@ function tritonModulation(song1, song2) {
 // So also here I would put something like if abs(song_1.key - song_2.key) ≥ 3
 
 exports.noChordModulation = function (song1, song2) {
+  dist = cofDist(song1.key, song2.key);
+
   let chords;
+
+  if (dist < 3) {
+    return { chords: [], maxJump: 100 };
+  }
+
   n = Math.ceil(Math.random() * 2);
   if (n == 1) {
     chords = directModulation(song1, song2);
@@ -440,9 +490,7 @@ exports.noChordModulation = function (song1, song2) {
 // Chain modulation I go around the circleof fifths clock or counterclockwise and I do V, V7 in each step
 // till I get to play the next song key tonal
 exports.chainModulation = function (song1, song2) {
-  n1 = cycleF.indexOf(song1.key);
-  n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  let dist = cofDist(song1.key, song2.key);
 
   let firstIsMinor = false;
   let secondIsMinor = false;
@@ -478,6 +526,7 @@ exports.chainModulation = function (song1, song2) {
     if (n > 0) {
       if (n <= 6) {
         for (let i = 0; i <= n; i++) {
+          console.log(chords, typeof chords);
           chords.push(mod(cycleF, firstFifthIndex, i) + '^');
           if (i != n) {
             chords.push(mod(cycleF, firstFifthIndex, i) + '7');
@@ -495,6 +544,7 @@ exports.chainModulation = function (song1, song2) {
       n = -n;
       if (n <= 6) {
         for (let i = 0; i <= n; i++) {
+          console.log(chords, typeof chords);
           chords.push(mod(cycleF, firstFifthIndex, -i) + '^');
           if (i != n) {
             chords.push(mod(cycleF, firstFifthIndex, -i) + '7');
@@ -519,7 +569,7 @@ exports.chainModulation = function (song1, song2) {
     if (firstIsMinor == true) {
       let st1 = {};
       st1.key = firstRelMaj;
-      chords = deceptiveCadence(st1, true);
+      chords = deceptiveCadence(st1, song2, true);
       firstKey = firstRelMaj;
       firstFifthIndex = cycleF.indexOf(firstKey);
       n = secondFifthIndex - firstFifthIndex;
@@ -599,14 +649,14 @@ exports.chainModulation = function (song1, song2) {
       console.log(secondRelMaj);
       let st2 = {};
       st2.key = secondRelMaj;
-      let temp = deceptiveCadence(st2);
+      let temp = deceptiveCadence(st2, song1);
       for (let i = 0; i < temp.length; i++) {
         chords.push(temp[i]);
       }
     }
   }
-  let final = chunkArray(chords, 2);
-  return { final: final, maxJump: n };
+  //let final = chunkArray(chords, 2);
+  return { chords: chords, maxJump: dist, name: 'chain modulation' };
 };
 
 //TEST
@@ -841,7 +891,7 @@ function chunkArray(myArray, chunk_size) {
 exports.parallelMod = function (song1, song2) {
   n1 = cycleF.indexOf(song1.key);
   n2 = cycleF.indexOf(song2.key);
-  n = cofDist(n1, n2);
+  n = cofDist(song1.key, song2.key);
 
   let chords = [];
 
