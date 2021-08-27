@@ -50,7 +50,7 @@ exports.setNextSong = function (song) {
   //Generazione accordi harmonic connect
   let dummyConnect = Connect.connect(currentSong, nextSong);
   //TO BE REMOVED
-  dummyConnect = HarmonicConnect.chainModulation(currentSong, nextSong); //lascio per non rompere la build
+  //dummyConnect = HarmonicConnect.chainModulation(currentSong, nextSong).chords; //lascio per non rompere la build
 
   tempPart = generatePartiture(dummyConnect);
   partitureConnect = tempPart[0];
@@ -207,7 +207,7 @@ function generatePart(targetPartiture, timeSignature) {
       time,
       (velocity = 0.3)
     );
-    console.log('PART CURRENT MEASURE: ', chord.measure);
+    //console.log('PART CURRENT MEASURE: ', chord.measure);
     if (currentMeasure != chord.measure && !harmonicOn) {
       currentMeasure = chord.measure;
       Controller.setCurrentMeasure(currentMeasure);
@@ -230,7 +230,7 @@ function generatePart(targetPartiture, timeSignature) {
         Controller.setCurrentMeasureConnect(connectChordsIndex);
       }
     }
-    console.log('TonePlayer: ', currentMeasure, connectChordsIndex);
+    //console.log('TonePlayer: ', currentMeasure, connectChordsIndex);
     if (chord.lastChord) {
       if (
         !(Object.keys(nextSong).length === 0 && nextSong.constructor === Object)
@@ -421,7 +421,7 @@ sampler.volume.value = 0;
 let volSlider = document.getElementById('sliderVolume');
 volSlider.onchange = function () {
   sampler.volume.value = volSlider.value;
-  console.log(sampler.volume.value);
+  //console.log(sampler.volume.value);
 };
 
 function extractTimeSignature(ts) {
