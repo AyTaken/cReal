@@ -219,6 +219,7 @@ exports.pivotChord = function (song1, song2) {
   firstChordModulation = keys[currentKeyIndex + 11];
   currentKeyIndex = nextKeyIndex;
   secondChordModulation = keys[currentKeyIndex + 11];
+  secondChordModulation = secondChordModulation.replace('-', '');  
   chords = [firstChordModulation + 'o', secondChordModulation + 'o7'];
   return { chords: chords, maxJump: 1.5, name: 'Chromatic Pivot Chord' };
 };
