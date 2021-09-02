@@ -37,5 +37,8 @@ exports.connect = function (song1, song2) {
     harmonicConnectChords.push(temp);
   });
 
+  let spanCurrMod = document.getElementById('currentMod');
+  spanCurrMod.textContent = doableMods[minIndex].name;
+
   return harmonicConnectChords;
 };
