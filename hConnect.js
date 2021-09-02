@@ -237,7 +237,7 @@ exports.enharmonicDominant = function (song1, song2) {
 
   let chords = [];
 
-  if (n >= 2 || song1.key.includes('-') || song2.key.includes('-')) {
+  if (n != 5 || song1.key.includes('-') || song2.key.includes('-')) {
     return { chords: chords, maxJump: 100 };
   }
 
