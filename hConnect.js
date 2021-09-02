@@ -388,7 +388,7 @@ exports.dimSevenDomSeven = function (song1, song2) {
 
   let chords = [];
 
-  if (n != 3 || !song1.key.includes('-') || song2.key.includes('-')) {
+  if (n != 0 || !song1.key.includes('-') || song2.key.includes('-')) {
     return { chords: chords, maxJump: 100 };
   }
 
