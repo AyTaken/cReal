@@ -351,7 +351,7 @@ exports.enharmonicDimSeven = function (song1, song2) {
 
   let chords = [];
 
-  if (n != 3 || !song2.key.includes('-')) {
+  if (n != 0 || !song2.key.includes('-')) {
     return { chords: [], maxJump: 100 };
   }
 
