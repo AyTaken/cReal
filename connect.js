@@ -20,6 +20,11 @@ exports.connect = function (song1, song2) {
   console.log('modMatrix:', modMatrix);
 
   let doableMods = modMatrix.filter((mod) => mod.maxJump != 100);
+  let allZero = true;
+  for (let i = 0; i < doableMods.length; i++) {
+    if (doableMods[i].maxJump !== 0) allZero = false;
+  }
+  if (allZero) doableMods.forEach((mod) => (mod.maxJump = mod.maxJump + 1));
   let ratios = doableMods.map((mod) => mod.maxJump / mod.chords.length);
 
   let maxNorm = Math.max(...ratios);
@@ -30,6 +35,8 @@ exports.connect = function (song1, song2) {
   }
   let distances = ratiosNorm.map((ratio) => Math.abs(ratio - boldSmoothValue));
   let minIndex = distances.indexOf(Math.min(...distances));
+  console.log(boldSmoothValue);
+  console.log(distances);
   let harmonicConnectChords = [];
   doableMods[minIndex].chords.forEach((chord) => {
     let temp = [];
